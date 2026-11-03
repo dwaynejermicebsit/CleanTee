@@ -1,0 +1,394 @@
+/* ==========================================================
+   CLEANTEE – SOFT GLOW + MOTION (on top of style.css)
+   Flat colours, no gradient frames. Depth comes from glow.
+   Load AFTER style.css. Pair with js/enhancements.js.
+   Booking date + time pickers live at the bottom of this file
+   and are driven by js/pickers.js.
+========================================================== */
+
+:root{
+  --focus-ring:rgba(47,127,216,.22);
+  --glow-blue:0 8px 22px rgba(47,127,216,.30);
+  --glow-orange:0 8px 24px rgba(245,154,12,.42);
+  --glow-navy:0 10px 28px rgba(10,58,122,.22);
+  --frame:#124f9c;
+}
+
+/* ---------- PAGE ---------- */
+/* opacity only: a transform/filter on <body> would make the fixed booking modal size itself to the page */
+body{animation:page-in .6s ease both}
+@keyframes page-in{from{opacity:0}to{opacity:1}}
+body::before{background:#0a3a7a}
+::selection{background:#f59a0c;color:#1a1200}
+::-webkit-scrollbar{width:11px}
+::-webkit-scrollbar-track{background:#e8f1fc}
+::-webkit-scrollbar-thumb{background:#5a9be0;border-radius:99px;border:2px solid #e8f1fc}
+::-webkit-scrollbar-thumb:hover{background:#2f7fd8}
+
+/* scroll progress bar (Chrome / Edge / Safari 26+) */
+@supports (animation-timeline:scroll()){
+  html::before{
+    content:"";position:fixed;top:0;left:0;right:0;height:3px;z-index:200;
+    background:var(--or);box-shadow:0 0 10px rgba(245,154,12,.7);
+    transform-origin:0 50%;transform:scaleX(0);
+    animation:progress linear both;animation-timeline:scroll(root);
+  }
+}
+@keyframes progress{to{transform:scaleX(1)}}
+
+/* ---------- HEADER ---------- */
+header{
+  background:var(--navy);
+  backdrop-filter:blur(14px);
+  box-shadow:0 6px 22px rgba(10,58,122,.32);
+}
+header::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:rgba(245,154,12,.85);box-shadow:0 0 12px rgba(245,154,12,.7);
+}
+nav a{position:relative}
+nav a:not(.cta)::after{
+  content:"";position:absolute;left:50%;bottom:3px;width:0;height:2px;border-radius:2px;
+  background:var(--or);box-shadow:0 0 8px rgba(245,154,12,.7);transition:width .35s,left .35s;
+}
+nav a:not(.cta):hover::after,nav a.on::after{width:60%;left:20%}
+nav a.cta{background:var(--or);animation:cta-pulse 2.6s ease-in-out infinite}
+@keyframes cta-pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,154,12,.5)}50%{box-shadow:0 0 0 9px rgba(245,154,12,0)}}
+.logo-img{animation:float 5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px)}}
+
+/* ---------- HERO ---------- */
+.hero{background:var(--frame)}
+.hero h1{text-shadow:0 6px 30px rgba(0,0,0,.22)}
+/* "Done & Dusteed!" – solid orange text with a glow (also covers the per-letter spans) */
+.hero h1 em,.hero h1 em .c{
+  background:none!important;-webkit-background-clip:border-box;background-clip:border-box;
+  color:var(--or)!important;-webkit-text-fill-color:var(--or)!important;
+}
+.hero h1 em{text-shadow:0 0 26px rgba(245,154,12,.55)}
+/* no sweeping shimmer on buttons */
+.btn::after{display:none}
+.hero-logo{animation:float 5s ease-in-out infinite;box-shadow:0 18px 44px rgba(0,0,0,.32),0 0 0 6px rgba(255,255,255,.12)}
+.blob{opacity:.4;translate:calc(var(--px,0)*40px) calc(var(--py,0)*40px);transition:translate .4s ease-out}
+
+/* ---------- BANNERS / MARQUEE ---------- */
+.ph{background:var(--frame);position:relative;overflow:hidden}
+.ph::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 12% 0,rgba(245,154,12,.16),transparent 42%);
+}
+.ph>*{position:relative;z-index:1}
+.booking-top{position:relative}
+.mq{background:var(--or)}
+.mq:hover div{animation-play-state:paused}
+
+/* ---------- CARDS ---------- */
+.card{transition:transform .15s,box-shadow .4s,border-color .3s}
+.card:hover{
+  border-color:rgba(245,154,12,.55);
+  box-shadow:0 0 0 1px rgba(245,154,12,.3),0 16px 38px rgba(245,154,12,.2);
+}
+.card:hover .ic{animation:wiggle .6s ease}
+@keyframes wiggle{25%{transform:rotate(-12deg) scale(1.15)}75%{transform:rotate(12deg) scale(1.15)}}
+.stat{transition:transform .3s,box-shadow .3s,border-color .3s}
+.stat:hover{transform:translateY(-5px);border-color:rgba(47,127,216,.4);box-shadow:var(--glow-blue)}
+.note{box-shadow:var(--glow-navy)}
+
+/* ---------- BUTTONS ---------- */
+.btn,.cta{transition:transform .25s cubic-bezier(.2,1.6,.4,1),box-shadow .3s}
+.btn:hover,.cta:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 32px rgba(245,154,12,.55)}
+.btn:active,.cta:active{transform:scale(.96)}
+.btn.alt{backdrop-filter:blur(8px)}
+.btn.alt:hover{background:rgba(255,255,255,.26);box-shadow:0 8px 24px rgba(255,255,255,.16)}
+
+/* ---------- FORMS / TABS / CHIPS ---------- */
+form{box-shadow:0 14px 40px rgba(10,58,122,.07)}
+input,select,textarea{transition:border-color .25s,box-shadow .25s,background .25s,transform .25s}
+input:focus,select:focus,textarea:focus{
+  box-shadow:0 0 0 4px var(--focus-ring),0 8px 22px rgba(47,127,216,.14);
+  transform:translateY(-1px);outline:none;
+}
+.tabs button.on{box-shadow:var(--glow-blue);animation:chip-pop .35s cubic-bezier(.2,1.6,.4,1)}
+.chips span:hover{transform:translateY(-2px);border-color:#2f7fd8}
+.chips input:checked+span{box-shadow:var(--glow-blue);animation:chip-pop .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes chip-pop{50%{transform:scale(1.1)}}
+.est{background:var(--navy);box-shadow:var(--glow-navy)}
+
+/* ---------- NATIVE DATE / TIME INPUTS (other pages, e.g. report) ---------- */
+input[type=date],input[type=time]{cursor:pointer;font-weight:500}
+input[type=date]:hover,input[type=time]:hover{
+  border-color:#f59a0c;box-shadow:0 6px 18px rgba(245,154,12,.2);
+}
+input[type=date]::-webkit-calendar-picker-indicator,
+input[type=time]::-webkit-calendar-picker-indicator{
+  cursor:pointer;padding:5px;border-radius:8px;transition:transform .3s,background .3s;
+}
+input[type=date]::-webkit-calendar-picker-indicator:hover,
+input[type=time]::-webkit-calendar-picker-indicator:hover{
+  background:rgba(245,154,12,.22);transform:rotate(-10deg) scale(1.2);
+}
+/* set by enhancements.js when a value is chosen */
+.fx-picked{animation:fx-ring .9s ease-out,fx-pop .5s cubic-bezier(.2,1.6,.4,1)!important}
+.fx-set{
+  border-color:#f59a0c!important;background:#fffaf0!important;
+  box-shadow:0 0 0 3px rgba(245,154,12,.18);
+}
+@keyframes fx-ring{0%{box-shadow:0 0 0 0 rgba(245,154,12,.7)}100%{box-shadow:0 0 0 20px rgba(245,154,12,0)}}
+@keyframes fx-pop{0%{transform:scale(1)}40%{transform:scale(1.03)}70%{transform:scale(.99)}100%{transform:scale(1)}}
+.fx-badge{
+  display:inline-flex;align-items:center;gap:8px;margin-top:8px;padding:7px 15px;border-radius:99px;
+  background:var(--navy);color:#fff;font:600 13px var(--bd,'Poppins',sans-serif);
+  box-shadow:var(--glow-navy);animation:fx-badge-in .5s cubic-bezier(.2,1.6,.4,1) both;
+}
+.fx-badge i{font-style:normal;display:inline-block;animation:float 2.5s ease-in-out infinite}
+@keyframes fx-badge-in{from{opacity:0;transform:translateY(-10px) scale(.6)}to{opacity:1;transform:none}}
+/* confetti / sparkles */
+.fx-p{
+  position:fixed;left:0;top:0;width:var(--s,8px);height:var(--s,8px);border-radius:var(--r,50%);
+  background:var(--c);pointer-events:none;z-index:100000;
+  transform:translate(var(--x),var(--y));
+  animation:fx-burst .95s cubic-bezier(.1,.8,.3,1) forwards;
+}
+@keyframes fx-burst{
+  0%{transform:translate(var(--x),var(--y)) scale(1) rotate(0);opacity:1}
+  100%{transform:translate(calc(var(--x) + var(--dx)),calc(var(--y) + var(--dy) + 50px)) scale(.2) rotate(var(--rot));opacity:0}
+}
+.fx-trail{
+  position:fixed;left:0;top:0;width:7px;height:7px;border-radius:50%;pointer-events:none;z-index:99998;
+  background:var(--c);box-shadow:0 0 10px var(--c);
+  transform:translate(var(--x),var(--y));animation:fx-fade .8s ease-out forwards;
+}
+@keyframes fx-fade{to{opacity:0;transform:translate(var(--x),calc(var(--y) + 24px)) scale(0)}}
+
+/* ---------- SCROLL REVEAL (added by enhancements.js) ---------- */
+.fx-reveal{opacity:0;transform:translateY(46px) scale(.96);filter:blur(5px);transition:opacity .8s,transform .9s cubic-bezier(.2,.9,.2,1.1),filter .8s;transition-delay:var(--fd,0ms)}
+.fx-reveal.fx-in{opacity:1;transform:none;filter:none}
+
+/* ---------- FOOTER / TOAST ---------- */
+footer::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:2px;
+  background:rgba(245,154,12,.85);box-shadow:0 0 12px rgba(245,154,12,.6);
+}
+footer a{transition:color .25s,text-shadow .25s}
+footer a:hover{text-shadow:0 0 14px rgba(245,154,12,.7)}
+#toast{box-shadow:0 12px 30px rgba(74,154,42,.4)}
+
+/* ---------- HOME HISTORY ---------- */
+.history-arrow{transition:filter .4s,transform .4s}
+.history-row:hover .history-arrow{filter:brightness(1.08) saturate(1.05)}
+.history-row:hover .history-arrow.right{transform:translateX(8px)}
+.history-row:hover .history-arrow.left{transform:translateX(-8px)}
+.history-image{transition:transform .5s cubic-bezier(.2,1.4,.4,1),box-shadow .5s;box-shadow:0 10px 26px rgba(10,58,122,.16)}
+.history-image img{transition:transform .9s cubic-bezier(.2,.8,.2,1)}
+.history-row:hover .history-image{transform:translateY(-6px) rotate(-1deg);box-shadow:0 0 0 1px rgba(245,154,12,.3),0 18px 40px rgba(245,154,12,.22)}
+.history-row:hover .history-image img{transform:scale(1.08)}
+
+/* ---------- ABOUT ---------- */
+.accordion-photo{transition:box-shadow .4s,transform .4s}
+.accordion-trigger:hover .accordion-photo{box-shadow:0 0 0 5px rgba(245,154,12,.35),0 0 18px rgba(245,154,12,.4);transform:scale(1.06) rotate(-3deg)}
+.accordion-item.open .accordion-trigger{box-shadow:0 0 0 1px rgba(47,127,216,.25),0 14px 34px rgba(47,127,216,.2)}
+
+/* ---------- TABLES (admin) ---------- */
+tbody tr{transition:background .25s}
+tbody tr:hover{background:rgba(47,127,216,.07)}
+
+/* ---------- BOOKING POPUP ---------- */
+.booking-modal,#bookingModal{background:rgba(8,29,62,.78)}
+.booking-modal-box{background:#f1f7ff;transition:transform .45s cubic-bezier(.2,1.4,.4,1)}
+.booking-panel,.booking-modal-box{box-shadow:0 24px 70px rgba(0,0,0,.27),0 0 0 1px rgba(141,192,245,.22),0 0 56px rgba(47,127,216,.22)}
+.booking-modal-header{background:#103f7d}
+.booking-back{background:var(--or)}
+.booking-back:hover{background:var(--or);box-shadow:var(--glow-orange)}
+.booking-close{transition:transform .35s,background .25s}
+.booking-close:hover{transform:rotate(90deg) scale(1.1)}
+.booking-x{transition:transform .35s,background .25s}
+.booking-x:hover{transform:translateY(-50%) rotate(90deg) scale(1.1)}
+.modal{background:rgba(10,30,60,.68);backdrop-filter:blur(6px)}
+
+/* booking window: let the form scroll inside the panel so nothing is cut off at the bottom */
+.booking-panel{min-height:0}
+.booking-body{flex:1 1 auto;min-height:0;padding-bottom:34px;overscroll-behavior:contain}
+
+/* ---------- CHECKOUT ---------- */
+.booking-panel,.mc{animation:panel-enter .45s cubic-bezier(.2,1.4,.4,1)}
+.checkout-box{grid-column:1/-1;padding:20px;border:1px solid #d8e8f0;background:#f1f7ff;border-radius:18px;display:grid;gap:12px}
+.checkout-box ul{padding-left:20px}.checkout-box li{padding:9px 0}.checkout-box button{margin:4px}
+.checkout-box .cart-remove{background:white;color:#9e3550;border:1px solid #e6c9d1;border-radius:8px;padding:4px 9px}
+.checkout-actions{display:flex;flex-wrap:wrap;gap:8px}.checkout-box h3{margin:0}
+
+/* ---------- MISC ---------- */
+.schedule-picked{animation:fx-ring .9s ease-out}
+.selection-note{font-size:.8rem;color:#245d74;display:block;min-height:1.5em}
+.pw .eye svg{transition:transform .3s,opacity .2s}.pw.shown .eye svg{transform:rotate(12deg) scale(1.12)}
+.ripple{position:absolute;border-radius:50%;background:#ffffff65;width:12px;height:12px;pointer-events:none;animation:ripple .6s ease-out forwards}
+.soft-reveal{animation:panel-enter .55s ease-out both}
+[hidden]{display:none!important}
+@keyframes panel-enter{from{opacity:0;transform:translateY(15px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes ripple{to{transform:scale(35);opacity:0}}
+
+/* ==========================================================
+   BOOKING DATE + TIME PICKERS  (driven by js/pickers.js)
+========================================================== */
+.ct-field{position:relative}
+.ct-wrap{display:block}
+.small-hint{font-size:11px;color:#4d6485}
+.ct-hint{display:block;margin-top:5px}
+
+/* the field itself */
+:is(#bookingForm,#reportForm) .ct-pick{
+  cursor:pointer;caret-color:transparent;padding-right:44px;
+  background-repeat:no-repeat;background-position:right 14px center;background-size:18px 18px;
+  transition:border-color .25s,box-shadow .25s,background-color .25s,transform .25s;
+}
+:is(#bookingForm,#reportForm) .ct-pick::placeholder{color:#7b8fae}
+:is(#bookingForm,#reportForm) .ct-pick.ct-date{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232f7fd8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='3'/%3E%3Cpath d='M3 10h18M8 3v4M16 3v4'/%3E%3C/svg%3E");
+}
+:is(#bookingForm,#reportForm) .ct-pick.ct-time{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232f7fd8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");
+}
+:is(#bookingForm,#reportForm) .ct-pick:hover{border-color:#f59a0c;box-shadow:0 6px 18px rgba(245,154,12,.22)}
+:is(#bookingForm,#reportForm) .ct-pick[aria-expanded="true"]{
+  border-color:#2f7fd8;box-shadow:0 0 0 4px var(--focus-ring),0 8px 22px rgba(47,127,216,.16);
+}
+:is(#bookingForm,#reportForm) .ct-pick.ct-has{border-color:#f59a0c;background-color:#fffaf0;font-weight:600}
+:is(#bookingForm,#reportForm) .ct-pick.ct-picked{animation:ct-ring .8s ease-out}
+@keyframes ct-ring{0%{box-shadow:0 0 0 0 rgba(245,154,12,.6)}100%{box-shadow:0 0 0 18px rgba(245,154,12,0)}}
+.ct-hint.ct-warn{color:#b3560a;font-weight:600}
+
+/* the popup */
+.ct-pop{
+  position:absolute;z-index:30;top:calc(100% + 8px);left:0;
+  width:304px;max-width:calc(100vw - 32px);
+  padding:14px;background:#fff;border:1px solid #d5e4f7;border-radius:20px;
+  box-shadow:0 18px 48px rgba(10,58,122,.24),0 0 0 1px rgba(47,127,216,.08),0 0 38px rgba(47,127,216,.16);
+}
+.ct-pop.ct-right{left:auto;right:0}
+.ct-pop:not([hidden]){animation:ct-in .24s cubic-bezier(.2,1.2,.4,1)}
+@keyframes ct-in{from{opacity:0;transform:translateY(-8px) scale(.96)}to{opacity:1;transform:none}}
+
+/* calendar */
+.ct-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.ct-title{font:600 17px var(--hd);color:var(--navy);text-align:center;flex:1}
+.ct-nav{
+  width:34px;height:34px;border:0;border-radius:50%;background:#eef5ff;color:#0a3a7a;
+  display:grid;place-items:center;cursor:pointer;
+  transition:background .2s,box-shadow .2s,transform .2s;
+}
+.ct-nav svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ct-nav:hover:not(:disabled){background:#f59a0c;color:#1a1200;box-shadow:0 6px 16px rgba(245,154,12,.45);transform:scale(1.1)}
+.ct-nav:disabled{opacity:.3;cursor:not-allowed}
+.ct-week{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font:600 11px var(--bd);color:#7185a3;margin-bottom:4px}
+.ct-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.ct-grid.ct-next{animation:ct-next .25s ease}
+.ct-grid.ct-prev{animation:ct-prev .25s ease}
+@keyframes ct-next{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+@keyframes ct-prev{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+.ct-day{
+  aspect-ratio:1;border:0;border-radius:12px;background:transparent;color:var(--tx);
+  font:600 13px var(--bd);cursor:pointer;
+  transition:transform .2s cubic-bezier(.2,1.6,.4,1),background .2s,box-shadow .2s;
+}
+.ct-day:hover:not(:disabled){background:#e6f1ff;transform:scale(1.12);box-shadow:0 6px 16px rgba(47,127,216,.28)}
+.ct-day:focus-visible,.ct-slot:focus-visible,.ct-link:focus-visible,.ct-nav:focus-visible{outline:2px solid #2f7fd8;outline-offset:2px}
+.ct-day.ct-today{box-shadow:inset 0 0 0 2px #2f7fd8}
+.ct-day.ct-sel,.ct-day.ct-sel:hover:not(:disabled){
+  background:#f59a0c;color:#1a1200;box-shadow:0 8px 20px rgba(245,154,12,.5);
+  animation:ct-pop .35s cubic-bezier(.2,1.6,.4,1);
+}
+.ct-day:disabled{opacity:.28;cursor:not-allowed}
+@keyframes ct-pop{0%{transform:scale(.6)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.ct-foot{display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid #e3eefb}
+.ct-link{border:0;background:none;color:#2f7fd8;font:600 13px var(--bd);padding:6px 10px;border-radius:99px;cursor:pointer;transition:background .2s,box-shadow .2s}
+.ct-link:hover{background:#eef5ff;box-shadow:0 4px 12px rgba(47,127,216,.2)}
+.ct-link.ct-muted{color:#7185a3}
+
+/* time slots */
+.ct-ptitle{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px}
+.ct-ptitle b{font:600 17px var(--hd);color:var(--navy)}
+.ct-ptitle span{font:500 11px var(--bd);color:#7185a3}
+.ct-group{font:600 12px var(--bd);color:#4d6485;margin:12px 0 6px}
+.ct-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ct-slot{
+  padding:10px 4px;border:1.5px solid #d5e4f7;border-radius:12px;background:#fff;color:var(--tx);
+  font:600 13px var(--bd);cursor:pointer;
+  transition:transform .2s cubic-bezier(.2,1.6,.4,1),background .2s,border-color .2s,box-shadow .2s;
+}
+.ct-slot:hover:not(:disabled){border-color:#2f7fd8;background:#eef5ff;transform:translateY(-3px);box-shadow:0 8px 18px rgba(47,127,216,.26)}
+.ct-slot.ct-sel,.ct-slot.ct-sel:hover:not(:disabled){
+  background:#f59a0c;border-color:#f59a0c;color:#1a1200;box-shadow:0 8px 20px rgba(245,154,12,.5);
+  animation:ct-pop .35s cubic-bezier(.2,1.6,.4,1);
+}
+.ct-slot:disabled{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+.ct-empty{margin:14px 0 4px;text-align:center;color:#4d6485;font-size:13px}
+
+/* city dropdown */
+:is(#bookingForm,#reportForm) .ct-native{
+  position:absolute;left:0;bottom:0;width:100%;height:1px;padding:0;border:0;
+  opacity:0;pointer-events:none;
+}
+:is(#bookingForm,#reportForm) .ct-select{
+  width:100%;display:flex;align-items:center;gap:10px;text-align:left;
+  padding:11px 13px;border:1px solid #c9d9ec;border-radius:10px;background:#fff;color:#0c2347;
+  font:14px Poppins,sans-serif;cursor:pointer;
+  transition:border-color .25s,box-shadow .25s,background-color .25s;
+}
+.ct-select svg,.ct-opt svg{width:18px;height:18px;flex:none;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ct-select .ct-pin,.ct-opt .ct-pin{stroke:#2f7fd8;stroke-width:1.8}
+.ct-select .ct-caret{width:16px;height:16px;stroke:#4d6485;stroke-width:2.2;transition:transform .25s}
+.ct-select .ct-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ct-select .ct-label.ct-ph{color:#7b8fae}
+:is(#bookingForm,#reportForm) .ct-select:hover{border-color:#f59a0c;box-shadow:0 6px 18px rgba(245,154,12,.22)}
+:is(#bookingForm,#reportForm) .ct-select[aria-expanded="true"]{border-color:#2f7fd8;box-shadow:0 0 0 4px var(--focus-ring),0 8px 22px rgba(47,127,216,.16)}
+:is(#bookingForm,#reportForm) .ct-select[aria-expanded="true"] .ct-caret{transform:rotate(180deg)}
+:is(#bookingForm,#reportForm) .ct-select.ct-has{border-color:#f59a0c;background-color:#fffaf0;font-weight:600}
+:is(#bookingForm,#reportForm) .ct-select.ct-bad{border-color:#d64550;box-shadow:0 0 0 3px rgba(214,69,80,.16)}
+:is(#bookingForm,#reportForm) .ct-select:focus-visible{outline:2px solid #2f7fd8;outline-offset:1px}
+.ct-pop[data-kind="select"]{width:100%;max-width:none;padding:6px}
+/* open: soft fade + short slide, no scaling */
+.ct-pop[data-kind="select"]:not([hidden]){animation:ct-drop .22s ease-out both}
+@keyframes ct-drop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.ct-list{display:grid;gap:2px;max-height:272px;overflow-y:auto;overflow-x:hidden;padding:0;overscroll-behavior:contain}
+.ct-opt{
+  position:relative;display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px 10px 16px;border:0;border-radius:10px;
+  background:transparent;color:var(--tx);font:500 14px var(--bd);text-align:left;cursor:pointer;
+  transition:background-color .18s ease,color .18s ease;
+  animation:ct-opt-in .26s ease-out both;animation-delay:calc(var(--i,0)*24ms);
+}
+@keyframes ct-opt-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* hover: an orange accent bar grows in on the left, background tints. Nothing moves sideways. */
+.ct-opt::before{
+  content:"";position:absolute;left:4px;top:22%;bottom:22%;width:3px;border-radius:3px;background:var(--or);
+  transform:scaleY(0);transition:transform .2s ease;
+}
+.ct-opt .ct-name{flex:1}
+.ct-opt .ct-check{width:16px;height:16px;stroke:#b36d00;stroke-width:2.6;opacity:0}
+.ct-opt .ct-check path{stroke-dasharray:24;stroke-dashoffset:24}
+.ct-opt:hover,.ct-opt:focus-visible{background:#eef5ff}
+.ct-opt:hover::before,.ct-opt:focus-visible::before{transform:scaleY(1)}
+.ct-opt:focus-visible{outline:none}
+.ct-opt.ct-sel{background:#fff4e0;font-weight:700;color:#7a4a00}
+.ct-opt.ct-sel::before{transform:scaleY(1)}
+.ct-opt.ct-sel .ct-check{opacity:1}
+/* the check mark draws itself */
+.ct-opt.ct-sel .ct-check path{animation:ct-draw .35s ease-out .1s forwards}
+@keyframes ct-draw{to{stroke-dashoffset:0}}
+.ct-opt.ct-other{margin-top:4px;border-top:1px solid #e3eefb;border-radius:0 0 10px 10px;color:#4d6485}
+
+/* phones: popups become a bottom sheet */
+@media (max-width:640px){
+  .ct-pop[data-kind="select"]{width:auto;max-width:420px}
+  .ct-pop,.ct-pop.ct-right{
+    position:fixed;left:12px;right:12px;top:auto;bottom:12px;width:auto;max-width:420px;margin:0 auto;
+    box-shadow:0 0 0 100vmax rgba(8,29,62,.45),0 18px 48px rgba(10,58,122,.3);
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .ct-opt{opacity:1!important;transform:none!important}
+  .ct-opt .ct-check path{stroke-dashoffset:0!important}
+  .rv,.fx-reveal{opacity:1!important;transform:none!important;filter:none!important}
+  #glow,.bub,.spk,.fx-p,.fx-trail{display:none!important}
+}
+@media(pointer:coarse){#glow,.fx-trail{display:none}.tilt{transform:none!important}}

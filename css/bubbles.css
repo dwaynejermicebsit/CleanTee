@@ -1,0 +1,45 @@
+/* CLEANTEE bubbles look - same floating bubbles and sparkles as the Home banner, on every page */
+.ph{
+  background:
+    radial-gradient(60% 90% at 0% 10%, rgba(247,148,29,.28), transparent 60%),
+    radial-gradient(50% 80% at 100% 100%, rgba(46,160,140,.55), transparent 65%),
+    radial-gradient(40% 70% at 50% 55%, rgba(80,150,255,.35), transparent 70%),
+    linear-gradient(180deg,#0f4aa0,#0d3f8f)!important;
+  position:relative;overflow:hidden;
+}
+.ct-fx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.ct-fx.page{position:fixed;z-index:0;opacity:.55}
+.ph>*{position:relative;z-index:1}
+.ph>.ct-fx{position:absolute;z-index:0}
+.ct-b{
+  position:absolute;bottom:-60px;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.55),rgba(255,255,255,.12) 45%,rgba(120,170,255,.25));
+  border:1.5px solid rgba(255,255,255,.55);
+  box-shadow:inset 0 0 8px rgba(255,255,255,.25);
+  animation:ctRise linear infinite;
+}
+.ct-fx.page .ct-b{
+  background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.9),rgba(255,255,255,.25) 45%,rgba(90,150,255,.25));
+  border-color:rgba(30,100,200,.35);
+}
+.ct-s{
+  position:absolute;width:var(--s,14px);height:var(--s,14px);
+  background:#f9b233;opacity:.0;
+  clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);
+  animation:ctTwinkle ease-in-out infinite;
+}
+.ct-fx:not(.page) .ct-s:nth-child(3n){background:#9fc0e8}
+@keyframes ctRise{
+  0%{transform:translate(0,0);opacity:0}
+  10%{opacity:1}
+  50%{transform:translate(14px,-50vh)}
+  100%{transform:translate(-10px,-110vh);opacity:.8}
+}
+.ph .ct-b{animation-name:ctRiseBanner}
+@keyframes ctRiseBanner{
+  0%{transform:translate(0,0);opacity:0}
+  15%{opacity:1}
+  100%{transform:translate(10px,-330px);opacity:.7}
+}
+@keyframes ctTwinkle{0%,100%{opacity:0;transform:scale(.6) rotate(0)}50%{opacity:.9;transform:scale(1.1) rotate(25deg)}}
+@media (prefers-reduced-motion:reduce){.ct-b,.ct-s{animation:none;opacity:.5}}

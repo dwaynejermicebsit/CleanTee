@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>About | CLEANTEE</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="images/logo.png">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/bubbles.css">
+
+<style>
+/* ABOUT INFO CARDS */
+
+.about-info {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 32px 5% 20px;
+}
+
+.about-info .grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.about-info .card {
+  min-height: 205px;
+  padding: 24px;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.about-info .card .ic {
+  display: inline-block;
+  font-size: 30px;
+  margin-bottom: 14px;
+}
+
+.about-info .card h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+  margin: 0 0 5px;
+}
+
+.about-info .card p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* MEET THE TEAM */
+
+.team-section {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 5% 80px;
+}
+
+.team-section h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(30px, 4vw, 42px);
+  font-weight: 700;
+  color: #103f7d;
+  margin: 0 0 4px;
+}
+
+.team-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #7185a3;
+  margin: 0 0 80px;
+}
+
+/* GROUPS */
+
+.team-group {
+  max-width: 780px;
+  margin: 0 auto 45px;
+}
+
+.team-group-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 29px;
+  font-weight: 700;
+  color: #244d7b;
+  margin: 0 0 18px;
+}
+
+/* perspective gives the cursor tilt its 3D depth */
+.about-accordion {
+  display: grid;
+  gap: 30px;
+  perspective: 1000px;
+}
+
+.accordion-item {
+  min-width: 0;
+}
+
+.accordion-heading {
+  margin: 0;
+}
+
+/* ACCORDION HEADER (tilts toward the cursor, handled by main.js via the .tilt class) */
+
+.accordion-trigger {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 112px;
+  gap: 18px;
+  padding: 12px 24px 12px 20px;
+  border: none;
+  border-radius: 16px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  color: #244d7b;
+  font-family: 'Fredoka', sans-serif;
+  transition: transform .15s, box-shadow .3s;
+}
+
+/* orange glow that follows the cursor (uses --mx / --my set by main.js) */
+.accordion-trigger::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 0), rgba(245, 154, 12, .22), transparent 55%);
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.accordion-trigger:hover::before {
+  opacity: 1;
+}
+
+.accordion-trigger:hover {
+  box-shadow: 0 24px 50px rgba(10, 58, 122, .22);
+}
+
+.accordion-trigger:focus-visible {
+  outline: 3px solid #317bd0;
+  outline-offset: 3px;
+}
+
+/* CIRCULAR PHOTO */
+
+.accordion-photo {
+  display: block;
+  flex: 0 0 88px;
+  width: 88px;
+  height: 88px;
+  border: 5px solid #194c87;
+  border-radius: 50%;
+  background: #f59a0c;
+  overflow: hidden;
+}
+
+.accordion-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* NAME AND POSITION */
+
+.accordion-person {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.accordion-person span {
+  display: block;
+}
+
+/* ARROW */
+
+.accordion-chevron {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  fill: none;
+  stroke: #111;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform .35s ease;
+}
+
+.accordion-item.open .accordion-chevron {
+  transform: rotate(180deg);
+}
+
+/* DROPDOWN */
+
+.accordion-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows .4s ease,
+    opacity .3s ease,
+    visibility .4s;
+}
+
+.accordion-item.open .accordion-panel {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+}
+
+.accordion-panel-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.accordion-panel-content {
+  margin: 0 40px 0 120px;
+  padding: 18px 24px 25px;
+  background: #fffafa;
+  border-radius: 0 0 14px 14px;
+  color: #244d7b;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.accordion-panel-content p {
+  margin: 0 0 8px;
+}
+
+.accordion-panel-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* FOUNDER DROPDOWN LISTS */
+
+.panel-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: #f59a0c;
+  margin: 0 0 8px;
+}
+
+.panel-title:not(:first-child) {
+  margin-top: 18px;
+}
+
+.panel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.panel-list li {
+  position: relative;
+  padding-left: 26px;
+  margin-bottom: 6px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.panel-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #317bd0;
+  font-weight: 700;
+}
+
+/* RATING STARS */
+
+.rating-stars {
+  color: #f59a0c;
+  letter-spacing: 3px;
+  font-size: 21px;
+}
+
+
+/* KUMPARTNER CARDS: 3 per row */
+
+.team-group.wide {
+  max-width: none;
+}
+
+.team-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.staff-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 26px 18px 22px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(10, 58, 122, .08);
+  transition: transform .25s, box-shadow .3s;
+}
+
+.staff-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 40px rgba(10, 58, 122, .18);
+}
+
+.staff-photo {
+  width: 120px;
+  height: 120px;
+  border: 5px solid #194c87;
+  border-radius: 50%;
+  background: #f59a0c;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.staff-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.staff-name {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #244d7b;
+  line-height: 1.25;
+}
+
+.staff-role {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f59a0c;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin: 2px 0 8px;
+}
+
+.staff-loc {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #4d6485;
+  margin: 0 0 12px;
+}
+
+.staff-loc.soon {
+  color: #9aa9c0;
+  font-style: italic;
+}
+
+.staff-rate {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #e3ebf6;
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+}
+
+.staff-stars {
+  display: inline-block;
+  font-size: 22px;
+  letter-spacing: 2px;
+  line-height: 1;
+  background: linear-gradient(90deg, #f59a0c var(--p, 0%), #d5dbe5 var(--p, 0%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.staff-score {
+  display: block;
+  font-size: 13px;
+  color: #667;
+  margin-top: 4px;
+}
+
+.staff-score b {
+  color: #ee4d2d;
+  font-size: 16px;
+}
+
+.staff-norate {
+  font-size: 13px;
+  color: #9aa9c0;
+}
+
+@media (max-width: 900px) {
+  .team-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .team-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .staff-card {
+    transition: none;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+  .about-info {
+    padding: 30px 5% 25px;
+  }
+
+  .about-info .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .about-info .card {
+    min-height: auto;
+  }
+
+  .team-section {
+    padding-bottom: 60px;
+  }
+
+  .team-section h2 {
+    font-size: 30px;
+  }
+
+  .team-subtitle {
+    margin-bottom: 40px;
+  }
+
+  .team-group-title {
+    font-size: 24px;
+  }
+
+  .about-accordion {
+    gap: 18px;
+  }
+
+  .accordion-trigger {
+    min-height: 88px;
+    padding: 10px 14px;
+    gap: 14px;
+  }
+
+  .accordion-photo {
+    flex-basis: 66px;
+    width: 66px;
+    height: 66px;
+    border-width: 4px;
+  }
+
+  .accordion-person {
+    font-size: 16px;
+  }
+
+  .accordion-chevron {
+    flex-basis: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .accordion-panel-content {
+    margin: 0 8px;
+    padding: 16px;
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion-panel,
+  .accordion-chevron,
+  .accordion-trigger {
+    transition: none;
+  }
+}
+</style>
+<style>
+/* COMPANY PROFILE SECTIONS */
+.cp{max-width:1000px;margin:0 auto;padding:10px 20px 36px}
+.cp h2{font-family:"Fredoka",sans-serif;color:#0a3a7a;font-size:clamp(1.5rem,3vw,2rem);margin:0 0 6px}
+.cp .sub{color:#5b6f8a;margin:0 0 18px}
+.cp-box{background:#fff;border-radius:20px;box-shadow:0 4px 18px rgba(10,58,122,.08);padding:24px 26px}
+.cp-box ul{margin:10px 0 0;padding-left:20px}.cp-box li{margin:8px 0;line-height:1.55;color:#24364f}
+.cp-box p{line-height:1.6;color:#24364f;margin:0 0 8px}
+.cp-close{margin-top:14px!important;font-weight:600;color:#0a3a7a!important}
+.cp-chips{display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none}
+.cp-chips li{background:#eaf3ff;color:#0a3a7a;border-radius:999px;padding:9px 16px;font-weight:600;font-size:.95rem}
+.cp-chips.ok li::before{content:"\2713  ";color:#2e9e4f}
+.cp-chips.soon li{background:#fff4e0;color:#a85d00}
+.cp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.cp-grid h3{margin:0 0 8px;color:#0a3a7a;font-size:1.05rem}
+.cp-find a{color:#0a3a7a;font-weight:600}
+.cp-btn{display:inline-block;margin-top:10px;background:#f7941d;color:#fff!important;padding:10px 20px;border-radius:999px;text-decoration:none;font-weight:600}
+</style>
+<link rel="stylesheet" href="css/enhancements.css">
+</head>
+
+<body data-page="about">
+
+<main>
+
+  <!-- ABOUT HEADER -->
+
+  <div class="ph">
+    <h1>About CLEANTEE</h1>
+    <p>Next level cleaning, done with care.</p>
+  </div>
+
+  <!-- MISSION, VISION, ECO -->
+
+  <section class="about-info">
+    <div class="grid">
+
+      <div class="card tilt rv">
+        <span class="ic">🎯</span>
+        <h3>Our Mission</h3>
+        <p>
+          At CLEANTEE Cleaning Service, our mission is to create cleaner,
+          healthier, and more comfortable spaces for every home and business
+          in Metro Manila. We are committed to delivering reliable,
+          high-quality cleaning solutions through trained professionals,
+          eco-friendly practices, and customer-centered service.
+        </p>
+      </div>
+
+      <div class="card tilt rv" style="--d:1">
+        <span class="ic">🔭</span>
+        <h3>Our Vision</h3>
+        <p>
+          To be the most sought-after cleaning company in Metro Manila,
+          recognized for our commitment to quality, reliability,
+          and customer satisfaction. We aim to set new industry standards
+          by continuously improving our processes, embracing innovation,
+          and fostering a culture of excellence. Our dedicated team is
+          driven by a passion for cleanliness and a mission to make every
+          space we service healthier and more enjoyable for all.
+        </p>
+      </div>
+
+      <div class="card tilt rv" style="--d:2">
+        <span class="ic">🌿</span>
+        <h3>Eco-minded</h3>
+        <p>
+          Safe, effective products and careful methods
+          for families, pets and workplaces.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WE STRIVE TO -->
+  <section class="cp">
+    <div class="cp-box">
+      <h2>We strive to</h2>
+      <ul>
+        <li>Elevate the standard of cleanliness by using safe, effective, and industry-approved cleaning methods.</li>
+        <li>Build trust and long-term relationships with clients through transparency, consistency, and respect for their time and space.</li>
+        <li>Improve the well-being of communities by promoting healthy, hygienic environments that enhance productivity and peace of mind.</li>
+        <li>Empower our team through skills training, fair opportunities, and a culture of integrity and excellence.</li>
+      </ul>
+      <p class="cp-close">With every space we clean, we aim to bring comfort, confidence, and cleanliness you can truly see and feel.</p>
+    </div>
+  </section>
+
+  <!-- MEET THE TEAM -->
+
+  <section class="team-section">
+
+    <h2>Meet the Team</h2>
+    <p class="team-subtitle">
+      The people behind every sparkle.
+    </p>
+
+    <!-- FOUNDERS -->
+
+    <div class="team-group">
+
+      <h3 class="team-group-title">Founders:</h3>
+
+      <div class="about-accordion" id="foundersAccordion"></div>
+
+    </div>
+
+    <!-- KUMPARTNERS -->
+
+    <div class="team-group wide">
+
+      <h3 class="team-group-title">kumpartners:</h3>
+
+      <div class="team-cards" id="kumpartnersAccordion"></div>
+
+    </div>
+
+  </section>
+
+  <!-- COMPANY PROFILE -->
+  <section class="cp">
+    <h2>Registered &amp; permitted</h2>
+    <p class="sub">CLEANTEE Cleaning Services is a legitimate, registered business.</p>
+    <ul class="cp-chips ok">
+      <li>DTI Business Name Registration</li>
+      <li>BIR Certificate of Registration</li>
+      <li>Barangay Business Permit</li>
+      <li>Manila Mayor's Permit (Electronic Business Permit)</li>
+    </ul>
+  </section>
+
+  <section class="cp">
+    <div class="cp-grid">
+      <div class="cp-box">
+        <h3>Clients &amp; collaborations</h3>
+        <ul>
+          <li>Yachal Architecture</li>
+          <li>Lines &amp; Bricks Design Build</li>
+          <li>4th Design Collab Construction</li>
+          <li>ICRC</li>
+          <li>Private architects and engineers</li>
+          <li>FHMoms (500K+ members) and MomPowerPH</li>
+        </ul>
+      </div>
+      <div class="cp-box">
+        <h3>Media mileage</h3>
+        <ul>
+          <li>Sponsor of the FHMoms Xmas Party, hosted by Mommy MK and MJ</li>
+          <li>Julius and Tintin Show (OnePH / Cignal)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="cp">
+    <h2>Coming soon</h2>
+    <p class="sub">More ways CLEANTEE will serve you.</p>
+    <ul class="cp-chips soon">
+      <li>Subscription-based services</li>
+      <li>CLEANTEE mobile app</li>
+      <li>Onsite car wash / detailing</li>
+      <li>Car parking space with car wash</li>
+      <li>Drone cleaning for high-rise / high-reach areas</li>
+    </ul>
+  </section>
+
+  <section class="cp cp-find">
+    <div class="cp-box">
+      <h2>Find us</h2>
+      <p>&#128205; 1666 Neptuno St, Paco, Manila 1007</p>
+      <p>&#128222; <a href="tel:+639693767617">+63 969 376 7617 | +63 998 577 5917</a></p>
+      <p>&#128172; <a href="https://www.facebook.com/profile.php?id=61570494264143" target="_blank" rel="noopener">CLEANTEE Cleaning Services on Facebook</a></p>
+      <a class="cp-btn" href="services.html">Book now</a>
+    </div>
+  </section>
+
+</main>
+
+<!-- EXISTING CLEANTEE SCRIPTS -->
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/main.js"></script>
+
+<!-- TEAM DATA AND ACCORDION -->
+
+<script>
+  /*
+    EDIT TEAM INFORMATION HERE.
+
+    rating:
+      Set to a number from 0 to 5 when verified.
+      Leave null when no rating is available.
+
+    location:
+      Replace "Not yet provided" with the actual
+      team member's service area or location.
+
+    information:
+      Founder biography or additional information.
+  */
+
+  const founders = [
+    {
+      name: "Sean M. Tee",
+      position: "Owner & CEO",
+      photo: "images/team/ceo.jpg",
+      sections: [
+        {
+          title: "Background",
+          items: [
+            "Multimedia Artist",
+            "Licensed Life Insurance Adviser"
+          ]
+        },
+        {
+          title: "Expertise",
+          items: [
+            "Strategic Leadership",
+            "Business Development and Sales",
+            "Operations Oversight",
+            "Marketing and Brand Management",
+            "Financial Management"
+          ]
+        }
+      ]
+    },
+    {
+      name: "Ailene Donna (Ice) S. Tee, RN",
+      position: "COO | General Manager | Safety Manager",
+      photo: "images/team/coo.jpg",
+      sections: [
+        {
+          title: "Background & Credentials",
+          items: [
+            "Occupational Health Nurse",
+            "Certified Safety and Health Officer | First Aider",
+            "Licensed Life and Non-Life Insurance Adviser",
+            "Real Estate Agent (approx. 90 various condo properties)"
+          ]
+        },
+        {
+          title: "Key Responsibilities",
+          items: [
+            "Daily Operations Management",
+            "Service Quality Control",
+            "Team Supervision",
+            "Resource and Inventory Management",
+            "Process Improvement",
+            "Client Experience Oversight"
+          ]
+        }
+      ]
+    }
+  ];
+
+  const kumpartners = [
+    {
+      name: "Renelyn Zarain",
+      position: "Cleaner",
+      photo: "images/team/cleaner 1.jpg",
+      location: "Caloocan City"
+    },
+    {
+      name: "Marizel Teorica",
+      position: "Cleaner",
+      photo: "images/team/cleaner 2.jpg",
+      location: "Not yet provided"
+    },
+    {
+      name: "Roderick Isales",
+      position: "Cleaner",
+      photo: "images/team/cleaner 3.jpg",
+      location: "Not yet provided"
+    },
+    {
+      name: "Catherine Magabolo",
+      position: "Cleaner",
+      photo: "images/team/cleaner 4.jpg",
+      location: "Not yet provided"
+    },
+    {
+      name: "Regina Aguirre",
+      position: "Cleaner",
+      photo: "images/team/cleaner 5.jpg",
+      location: "Not yet provided"
+    },
+    {
+      name: "Edgar Arendain",
+      position: "Cleaner",
+      photo: "images/team/cleaner 6.jpg",
+      location: "Not yet provided"
+    },
+    {
+      name: "Fe Dolleda",
+      position: "Cleaner",
+      photo: "images/team/cleaner 7.jpg",
+      location: "Not yet provided"
+    },
+    {
+      name: "Chary Mae Pavillar",
+      position: "Cleaner",
+      photo: "images/team/cleaner 8.jpg",
+      location: "Not yet provided"
+    }
+
+  ];
+
+  function createTeamAccordion(members, containerId, type) {
+    const container = document.getElementById(containerId);
+
+    members.forEach((member, index) => {
+      const id = containerId + "-" + index;
+
+      const article = document.createElement("article");
+      article.className = "accordion-item";
+
+      const heading = document.createElement("h4");
+      heading.className = "accordion-heading";
+
+      const button = document.createElement("button");
+      // "tilt" makes main.js move this card toward the cursor
+      button.className = "accordion-trigger tilt";
+      button.type = "button";
+      button.id = "trigger-" + id;
+      button.setAttribute("aria-expanded", "false");
+      button.setAttribute("aria-controls", "panel-" + id);
+
+      const photo = document.createElement("span");
+      photo.className = "accordion-photo";
+      photo.setAttribute("aria-hidden", "true");
+
+      // Add an image by changing this to true.
+      // The orange circle remains visible when false.
+
+      const showPhoto = true;
+
+      if (showPhoto && member.photo) {
+        const img = document.createElement("img");
+        img.src = member.photo;
+        img.alt = "";
+        photo.appendChild(img);
+      }
+
+      const person = document.createElement("span");
+      person.className = "accordion-person";
+
+      const nameLine = document.createElement("span");
+      nameLine.textContent = "name: " + member.name;
+
+      const positionLine = document.createElement("span");
+      positionLine.textContent =
+        type === "founder"
+          ? "Position: " + member.position
+          : member.position;
+
+      person.append(nameLine, positionLine);
+
+      const chevron = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg"
+      );
+      chevron.setAttribute("class", "accordion-chevron");
+      chevron.setAttribute("viewBox", "0 0 24 24");
+      chevron.setAttribute("aria-hidden", "true");
+
+      const path = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path"
+      );
+      path.setAttribute("d", "m4 9 8 8 8-8");
+      chevron.appendChild(path);
+
+      button.append(photo, person, chevron);
+      heading.appendChild(button);
+
+      const panel = document.createElement("div");
+      panel.className = "accordion-panel";
+      panel.id = "panel-" + id;
+      panel.setAttribute("role", "region");
+      panel.setAttribute("aria-labelledby", button.id);
+      panel.inert = true;
+
+      const inner = document.createElement("div");
+      inner.className = "accordion-panel-inner";
+
+      const content = document.createElement("div");
+      content.className = "accordion-panel-content";
+
+      if (type === "founder") {
+        member.sections.forEach(section => {
+          const title = document.createElement("h5");
+          title.className = "panel-title";
+          title.textContent = section.title;
+
+          const list = document.createElement("ul");
+          list.className = "panel-list";
+
+          section.items.forEach(text => {
+            const li = document.createElement("li");
+            li.textContent = text;
+            list.appendChild(li);
+          });
+
+          content.append(title, list);
+        });
+      } else {
+        const location = document.createElement("p");
+
+        const locationLabel = document.createElement("strong");
+        locationLabel.textContent = "Location: ";
+
+        location.append(
+          locationLabel,
+          document.createTextNode(member.location)
+        );
+
+        content.appendChild(location);
+      }
+
+      inner.appendChild(content);
+      panel.appendChild(inner);
+      article.append(heading, panel);
+      container.appendChild(article);
+
+      button.addEventListener("click", () => {
+        const isOpen = article.classList.toggle("open");
+
+        button.setAttribute(
+          "aria-expanded",
+          String(isOpen)
+        );
+
+        panel.inert = !isOpen;
+      });
+    });
+  }
+
+  createTeamAccordion(
+    founders,
+    "foundersAccordion",
+    "founder"
+  );
+
+  /* Kumpartners: cards, 3 per row, with each cleaner's customer rating.
+     Ratings come from backend/reviews/staff.php (matched by name) and show
+     only after the admin publishes the customer's review. */
+  function createTeamCards(members, containerId) {
+    const container = document.getElementById(containerId);
+    const cards = new Map();
+    const norm = t => String(t || "").trim().toLowerCase().replace(/\s+/g, " ");
+
+    members.forEach(member => {
+      const card = document.createElement("article");
+      card.className = "staff-card";
+
+      const photo = document.createElement("div");
+      photo.className = "staff-photo";
+      if (member.photo) {
+        const img = document.createElement("img");
+        img.src = member.photo;
+        img.alt = member.name;
+        img.loading = "lazy";
+        photo.appendChild(img);
+      }
+
+      const name = document.createElement("div");
+      name.className = "staff-name";
+      name.textContent = member.name;
+
+      const role = document.createElement("div");
+      role.className = "staff-role";
+      role.textContent = member.position;
+
+      const loc = document.createElement("p");
+      const hasLoc = member.location && !/^not yet/i.test(member.location);
+      loc.className = "staff-loc" + (hasLoc ? "" : " soon");
+      loc.textContent = hasLoc ? "\uD83D\uDCCD " + member.location : "Location coming soon";
+
+      const rate = document.createElement("div");
+      rate.className = "staff-rate";
+      rate.innerHTML = '<span class="staff-norate">No ratings yet</span>';
+
+      card.append(photo, name, role, loc, rate);
+      container.appendChild(card);
+      cards.set(norm(member.name), rate);
+    });
+
+    fetch("backend/reviews/staff.php", { credentials: "same-origin" })
+      .then(r => r.json())
+      .then(d => {
+        if (!d || !d.ok || !Array.isArray(d.staff)) return;
+        d.staff.forEach(s => {
+          const rate = cards.get(norm(s.name));
+          if (!rate || s.average == null || !s.count) return;
+          const pct = Math.max(0, Math.min(100, s.average / 5 * 100));
+          rate.textContent = "";
+          const stars = document.createElement("span");
+          stars.className = "staff-stars";
+          stars.style.setProperty("--p", pct + "%");
+          stars.setAttribute("role", "img");
+          stars.setAttribute("aria-label", s.average + " out of 5 stars");
+          stars.textContent = "\u2605\u2605\u2605\u2605\u2605";
+          const score = document.createElement("span");
+          score.className = "staff-score";
+          const b = document.createElement("b");
+          b.textContent = s.average.toFixed(1);
+          score.append(b, " out of 5 \u00B7 " + s.count + " rating" + (s.count === 1 ? "" : "s"));
+          rate.append(stars, score);
+        });
+      })
+      .catch(() => {});
+  }
+
+  createTeamCards(kumpartners, "kumpartnersAccordion");
+</script>
+
+<script src="js/enhancements.js"></script>
+<script src="js/bubbles.js"></script>
+</body>
+</html>

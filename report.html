@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Report an Issue | CLEANTEE</title>
+  <meta name="description" content="Something not right after your cleaning? Send a post-service report to CLEANTEE with photos and we will make it right.">
+  <meta name="theme-color" content="#0a3a7a">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CLEANTEE Cleaning Services">
+  <meta property="og:title" content="Report an Issue | CLEANTEE">
+  <meta property="og:description" content="Something not right after your cleaning? Send a post-service report to CLEANTEE with photos and we will make it right.">
+  <meta property="og:image" content="images/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="images/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/enhancements.css">
+<link rel="stylesheet" href="css/bubbles.css">
+<link rel="stylesheet" href="css/extras.css">
+
+</head>
+<body data-page="report">
+  <main>
+    <div class="ph">
+      <h1>Post-Service Report</h1>
+      <p>Something not right after your cleaning? Tell us and we will make it right.</p>
+    </div>
+    <div class="w">
+      <form id="reportForm" enctype="multipart/form-data">
+        <div>
+          <label>Full name</label>
+          <input name="name" required>
+        </div>
+        <div>
+          <label>Booking reference</label>
+          <input name="booking_ref" placeholder="CT-XXXXXX">
+        </div>
+        <div>
+          <label>Email or phone</label>
+          <input name="contact" required>
+        </div>
+        <div>
+          <label>Service date</label>
+          <input type="date" name="service_date" data-ct="past" required>
+        </div>
+        <div class="f">
+          <label>What happened?</label>
+          <div class="chips">
+            <label><input type="radio" name="type" value="missed" checked><span>🧽 Missed spots</span></label>
+            <label><input type="radio" name="type" value="damage"><span>💥 Damage</span></label>
+            <label><input type="radio" name="type" value="missing"><span>🔍 Missing item</span></label>
+            <label><input type="radio" name="type" value="staff"><span>👤 Staff concern</span></label>
+            <label><input type="radio" name="type" value="other"><span>💬 Other</span></label>
+          </div>
+        </div>
+        <div>
+          <label>Urgency</label>
+          <select name="severity">
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+          </select>
+        </div>
+        <div>
+          <label>Photos (optional)</label>
+          <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple>
+        </div>
+        <div class="f">
+          <label>Describe the issue</label>
+          <textarea name="details" rows="4" required></textarea>
+        </div>
+        <div class="f">
+          <button class="btn" style="width:100%">Submit Report</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+  const form=document.getElementById('reportForm');
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();const button=form.querySelector('button[type="submit"],button.btn');
+    button.disabled=true;
+    try{
+      const u=await authReady;
+      if(!u||u.role!=='customer')throw new Error('Please log in as a customer to submit a report.');
+      const r=await fetch('backend/reports/create.php',{method:'POST',credentials:'same-origin',headers:{'X-CSRF-Token':ctCsrf},body:new FormData(form)});
+      const d=await r.json();if(!r.ok||!d.ok||!d.ref)throw new Error(d.message||'Report could not be saved');
+      alert('Report submitted! Your reference: '+d.ref+' (Status: New)');form.reset();
+    }catch(err){alert(err.message||'Could not submit report');}
+    finally{button.disabled=false;}
+  });
+  </script>
+<script src="js/pickers.js"></script>
+<script src="js/enhancements.js"></script>
+<script src="js/bubbles.js"></script>
+<script src="js/extras.js" defer></script>
+</body>
+</html>

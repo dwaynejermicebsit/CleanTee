@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>My Jobs | CLEANTEE Staff</title>
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="images/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/enhancements.css">
+  <link rel="stylesheet" href="css/bubbles.css">
+
+  <style>
+    .job{background:#fff;border:1px solid var(--ln,#dde3ec);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+    .job h3{margin:0 0 4px}
+    .job .when{font-weight:600;color:var(--bl)}
+    .job p{margin:6px 0;word-break:break-word}
+    .job .st{display:inline-block;padding:3px 10px;border-radius:99px;font-size:13px;font-weight:600;background:#e8f1fc;color:var(--bl)}
+    .job .st.prog{background:#fff2dc;color:#b86a00}.job .st.done{background:#e3f6e6;color:#1f7a34}
+    .job .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .job .row a,.job .row button{flex:1;min-width:130px;text-align:center}
+    .hint{color:var(--mu);font-size:14px}
+    .sec{margin:22px 0 10px}
+  </style>
+</head>
+<body data-page="staff">
+  <main>
+    <div class="ph"><h1 id="hi">My jobs</h1><p id="sub">Your assigned cleanings.</p></div>
+    <div class="w">
+      <div id="jobs"></div>
+      <p style="text-align:center;margin-top:18px"><button class="btn alt" id="out" type="button" style="color:var(--tx);border-color:var(--ln)">Log out</button></p>
+    </div>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+  /* wrapped in a function so these names can never clash with the ones in api.js */
+  (function(){
+  const $=s=>document.querySelector(s);
+  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const fmtDate=d=>{const x=new Date(d+"T00:00:00");return isNaN(x)?d:x.toLocaleDateString("en-PH",{weekday:"short",month:"short",day:"numeric",year:"numeric"})};
+  const fmtTime=t=>{const [h,m]=String(t).split(":").map(Number);return isNaN(h)?t:((h%12)||12)+":"+String(m).padStart(2,"0")+" "+(h<12?"AM":"PM")};
+  const safeMap=u=>/^https:\/\//.test(u||"")?u:"";
+  function toast(m){const t=document.getElementById("toast");if(t){t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),4000)}else alert(m)}
+  async function call(body){
+    await authReady;
+    const opts={credentials:"same-origin"};
+    if(body){opts.method="POST";opts.headers={"X-CSRF-Token":ctCsrf};opts.body=new URLSearchParams(body)}
+    const r=await fetch("backend/staff/jobs.php",opts);let d={};
+    try{d=await r.json()}catch(e){}
+    if(!r.ok||!d.ok)throw new Error(d.message||"Request failed");
+    return d;
+  }
+  function card(j){
+    const cls=j.status==="In Progress"?"prog":j.status==="Done"?"done":"";
+    const map=safeMap(j.map_link),
+      dir=map||("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(j.address));
+    let act="";
+    if(j.status==="Assigned")act=j.can_start?`<button class="btn" data-act="start" data-ref="${esc(j.ref)}">Start job</button>`:`<span class="hint">You can start this job on ${esc(fmtDate(j.date))}.</span>`;
+    else if(j.status==="In Progress")act=`<button class="btn" data-act="done" data-ref="${esc(j.ref)}">Mark as done</button>`;
+    return `<article class="job"><span class="st ${cls}">${esc(j.status)}</span>
+      <h3>${esc(j.service)}</h3>
+      <p class="when">${esc(fmtDate(j.date))} at ${esc(fmtTime(j.time))} &middot; ${esc(j.hours)} hr</p>
+      <p><b>Customer:</b> ${esc(j.customer)}</p>
+      <p><b>Address:</b> ${esc(j.address)}</p>
+      ${j.notes?`<p><b>Notes:</b> ${esc(j.notes)}</p>`:""}
+      ${j.teammates&&j.teammates.length?`<p><b>Team:</b> ${esc(j.teammates.join(", "))}</p>`:""}
+      <p class="hint">Ref ${esc(j.ref)}</p>
+      <div class="row"><a class="btn alt" style="color:var(--tx);border-color:var(--ln)" href="${esc(dir)}" target="_blank" rel="noopener">Directions</a><a class="btn alt" style="color:var(--tx);border-color:var(--ln)" href="tel:${esc(j.phone)}">Call customer</a>${act}</div></article>`;
+  }
+  async function load(){
+    const box=$("#jobs");
+    try{
+      const d=await call();
+      $("#hi").textContent="Hi, "+d.staff.split(" ")[0]+"!";
+      const act=d.jobs.filter(j=>j.status!=="Done"),done=d.jobs.filter(j=>j.status==="Done");
+      $("#sub").textContent=act.length?`You have ${act.length} active job${act.length===1?"":"s"}.`:"No active jobs right now.";
+      box.innerHTML=(act.length?act.map(card).join(""):`<div class="job"><p style="text-align:center;margin:10px 0"><b>No jobs assigned right now.</b><br><span class="hint">New jobs appear here once the admin assigns them to you.</span></p></div>`)+
+        (done.length?`<h3 class="sec">Finished (last 14 days)</h3>`+done.map(card).join(""):"");
+    }catch(e){box.innerHTML=`<div class="job"><p>${esc(e.message)}</p></div>`}
+  }
+  $("#jobs").addEventListener("click",async e=>{
+    const b=e.target.closest("[data-act]");if(!b)return;
+    const msg=b.dataset.act==="start"?"Start this job now? The customer will be notified.":"Mark this job as done? The customer will be notified.";
+    if(!confirm(msg))return;
+    b.disabled=true;
+    try{await call({action:b.dataset.act,ref:b.dataset.ref});toast(b.dataset.act==="start"?"Job started":"Job marked done");}
+    catch(err){toast(err.message)}
+    load();
+  });
+  $("#out").onclick=async()=>{try{await authRequest("logout")}catch(e){}location.replace("auth.html")};
+  authReady.then(u=>{
+    if(!u||u.role!=="staff"){location.replace("auth.html");return}
+    load();
+  });
+  })();
+  </script>
+  
+<script src="js/bubbles.js"></script>
+</body>
+</html>

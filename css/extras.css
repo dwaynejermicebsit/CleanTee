@@ -1,0 +1,14 @@
+/* Floating contact button */
+.ct-fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:900;font-family:inherit}
+.ct-fab>button{width:56px;height:56px;border-radius:50%;border:0;background:#1877f2;color:#fff;font-size:26px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.ct-fab .ct-menu{position:absolute;right:0;bottom:68px;display:none;flex-direction:column;gap:8px;min-width:170px}
+.ct-fab.open .ct-menu{display:flex}
+.ct-fab .ct-menu a{display:block;padding:10px 14px;border-radius:12px;background:#fff;color:#222;text-decoration:none;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+@media print{.ct-fab{display:none}}
+/* Skeleton loaders and empty states */
+.sk{display:block;border-radius:8px;background:linear-gradient(90deg,#e6ebf2 25%,#f3f6fa 37%,#e6ebf2 63%);background-size:400% 100%;animation:skm 1.3s ease infinite;min-height:14px}
+.sk.card{height:120px;border-radius:16px}
+@keyframes skm{0%{background-position:100% 50%}100%{background-position:0 50%}}
+@media (prefers-reduced-motion:reduce){.sk{animation:none}}
+.empty-state{text-align:center;padding:36px 16px;color:var(--mu,#667)}
+.empty-state b{display:block;font-size:18px;color:var(--tx,#222);margin-bottom:6px}

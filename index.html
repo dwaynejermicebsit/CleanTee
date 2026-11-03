@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>CLEANTEE Cleaning Services | Next level cleaning in Metro Manila</title>
+  <meta name="description" content="CLEANTEE Cleaning Services in Metro Manila: residential, commercial, deep, post-construction, move in/out, fogging, grease trap and aircon cleaning by trained crews. Book online.">
+  <meta name="theme-color" content="#0a3a7a">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CLEANTEE Cleaning Services">
+  <meta property="og:title" content="CLEANTEE Cleaning Services">
+  <meta property="og:description" content="CLEANTEE Cleaning Services in Metro Manila: residential, commercial, deep, post-construction, move in/out, fogging, grease trap and aircon cleaning by trained crews. Book online.">
+  <meta property="og:image" content="images/logo.png">
+
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="images/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    /* ========================================
+       HOMEPAGE COMPANY HISTORY
+    ======================================== */
+
+    .home-history {
+      width: 100%;
+      padding: 30px 20px 25px;
+      background: #f1f7ff;
+      border-top: 1px solid #c9d9ec;
+    }
+
+    .history-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* ========================================
+       HISTORY ROWS
+    ======================================== */
+
+    .history-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 38px;
+      margin-bottom: 30px;
+    }
+
+    .history-row:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ========================================
+       IMAGE PLACEHOLDERS
+    ======================================== */
+
+
+
+.history-image {
+  flex: 0 0 225px;
+  width: 225px;
+  height: 205px;
+  min-width: 0;
+  border-radius: 15px;
+  background: transparent;
+  overflow: hidden;
+  padding: 0;
+}
+
+.history-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+
+
+    .history-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ========================================
+       ARROW-SHAPED TEXT BOXES
+    ======================================== */
+
+    .history-arrow {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      min-height: 155px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 18px 35px 18px 20px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 21px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .history-arrow h3 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin: 0;
+    }
+
+    .history-arrow p {
+      margin: 0;
+      font: inherit;
+    }
+
+    .history-arrow strong {
+      color: #ff9c36;
+    }
+
+    /* NAVY ARROWS - POINT RIGHT */
+
+    .history-arrow.right {
+      background: #214775;
+      color: white;
+      border-radius: 22px 0 0 22px;
+      clip-path: polygon(
+        0 0,
+        87% 0,
+        100% 50%,
+        87% 100%,
+        0 100%
+      );
+      padding-right: 75px;
+    }
+
+    /* ORANGE ARROWS - POINT LEFT */
+
+    .history-arrow.left {
+      background: #f9a047;
+      color: white;
+      border-radius: 0 22px 22px 0;
+      clip-path: polygon(
+        13% 0,
+        100% 0,
+        100% 100%,
+        13% 100%,
+        0 50%
+      );
+      padding-left: 65px;
+      padding-right: 18px;
+      text-align: right;
+    }
+
+    .history-arrow.left h3 {
+      color: #214775;
+    }
+
+    /* ========================================
+       RESPONSIVE DESIGN
+    ======================================== */
+
+    @media (max-width: 800px) {
+      .history-row {
+        gap: 20px;
+      }
+
+      .history-image {
+        flex-basis: 180px;
+        width: 180px;
+        height: 180px;
+      }
+
+      .history-arrow {
+        font-size: 17px;
+        min-height: 150px;
+      }
+
+      .history-arrow h3 {
+        font-size: 19px;
+      }
+
+      .history-arrow.right {
+        padding-right: 55px;
+      }
+
+      .history-arrow.left {
+        padding-left: 50px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .home-history {
+        padding: 35px 16px;
+      }
+
+      .history-row,
+      .history-row.reverse {
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 40px;
+      }
+
+      .history-image {
+        flex: none;
+        width: min(100%, 300px);
+        height: 200px;
+      }
+
+      .history-arrow {
+        width: 100%;
+        flex: none;
+        min-height: 145px;
+        font-size: 17px;
+      }
+
+      .history-arrow h3 {
+        font-size: 19px;
+      }
+
+      .history-arrow.right {
+        padding: 22px 55px 22px 20px;
+      }
+
+      .history-arrow.left {
+        padding: 22px 20px 22px 55px;
+      }
+    }
+  </style>
+<link rel="stylesheet" href="css/enhancements.css">
+<link rel="stylesheet" href="css/extras.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LocalBusiness", "name": "CLEANTEE Cleaning Services", "description": "CLEANTEE Cleaning Services in Metro Manila: residential, commercial, deep, post-construction, move in/out, fogging, grease trap and aircon cleaning by trained crews. Book online.", "telephone": ["+639985775917", "+639693767617"], "address": {"@type": "PostalAddress", "streetAddress": "1666 Neptuno St, Barangay 813", "addressLocality": "Paco, Manila", "postalCode": "1007", "addressCountry": "PH"}, "areaServed": "Metro Manila", "sameAs": ["https://www.facebook.com/profile.php?id=61570494264143"]}</script>
+  <style>
+    .home-rv{padding:46px 5% 54px;background:#fff;text-align:center}
+    .home-rv h2{color:#0a3a7a;margin-bottom:6px}
+    .home-rv .sum{color:#4d6485;margin-bottom:24px}
+    .home-rv .sum b{color:#f59a0c;font-size:1.2em}
+    .home-rv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;max-width:1000px;margin:0 auto 22px;text-align:left}
+    .home-rv-card{background:#f1f7ff;border:1px solid #d5e4f7;border-radius:20px;padding:20px 22px}
+    .home-rv-card .st{color:#f59a0c;letter-spacing:2px}
+    .home-rv-card p{margin:8px 0;color:#0c2347;font-size:15px;line-height:1.55}
+    .home-rv-card small{color:#4d6485}
+  </style>
+</head>
+
+<body data-page="home">
+
+  <main>
+
+    <!-- ========================================
+         ORIGINAL CLEANTEE HERO SECTION
+    ======================================== -->
+
+    <div class="hero" id="hero">
+
+      <span class="tag">
+        ✨ CLEANTEE CLEANING SERVICES
+      </span>
+
+      <img
+        class="hero-logo"
+        src="images/logo.png"
+        alt="CLEANTEE Cleaning Services logo"
+      >
+
+       <h1 class="split">Next level Cleaning. <em>Done &amp; Dusteed!</em></h1>
+
+      <p>
+        Residential, commercial, deep and post-construction
+        cleaning by trained, friendly crews.
+      </p>
+
+      <a class="btn mag" href="services.html?book=1">
+        Book Now
+      </a>
+
+      <a class="btn alt mag" href="services.html">
+        View Services
+      </a>
+
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
+
+    </div>
+
+    <!-- ========================================
+         SCROLLING SERVICES BAR
+    ======================================== -->
+
+    <div class="mq">
+      <div id="mq"></div>
+    </div>
+
+    <!-- ========================================
+         COMPANY HISTORY SECTION
+    ======================================== -->
+
+    <section class="home-history">
+
+      <div class="history-container">
+
+        <!-- =====================================
+             SECTION 1 - COMPANY INTRODUCTION
+        ===================================== -->
+
+        <div class="history-row">
+
+          <!-- IMAGE LEFT -->
+
+          <div class="history-image">
+
+            
+   
+
+<div class="history-image">
+  <img src="images/giantombits.jpg"
+       alt="CLEANTEE company founding">
+</div>
+
+            
+
+ 
+
+          </div>
+
+          <!-- NAVY ARROW RIGHT -->
+
+          <div class="history-arrow right">
+
+            <p>
+              <strong>CLEANTEE Cleaning Services</strong>
+              was founded on December 24, 2026.
+              It is a growing cleaning business dedicated
+              to helping homeowners maintain clean,
+              comfortable, and organized homes.
+            </p>
+
+          </div>
+
+        </div>
+
+        <!-- =====================================
+             SECTION 2 - BUILDING THE CREW
+        ===================================== -->
+
+        <div class="history-row reverse">
+
+          <!-- ORANGE ARROW LEFT -->
+
+          <div class="history-arrow left">
+
+            <h3>Building the Crew</h3>
+
+            <p>
+              With COO Ailene Donna Tee, we grew
+              a team of trained, friendly Kumpartner
+              cleaners who treat every space as their own.
+            </p>
+
+          </div>
+
+          <!-- IMAGE RIGHT -->
+
+<div class="history-image">
+  <img src="images/justinejay.jpg"
+       alt="CLEANTEE today">
+</div>
+
+
+        </div>
+
+        <!-- =====================================
+             SECTION 3 - GROWING OUR SERVICES
+        ===================================== -->
+
+        <div class="history-row">
+
+          <!-- IMAGE LEFT -->
+
+<div class="history-image">
+  <img src="images/renelpo.jpg"
+       alt="CLEANTEE today">
+</div>
+
+
+          <!-- NAVY ARROW RIGHT -->
+
+          <div class="history-arrow right">
+
+            <h3>
+              <strong>Growing our services</strong>
+            </h3>
+
+            <p>
+              From everyday home cleaning, we expanded
+              to deep cleaning, post-construction,
+              move in/out, fogging, grease trap
+              and aircon cleaning.
+            </p>
+
+          </div>
+
+        </div>
+
+        <!-- =====================================
+             SECTION 4 - TODAY
+        ===================================== -->
+
+        <div class="history-row reverse">
+
+          <!-- ORANGE ARROW LEFT -->
+
+          <div class="history-arrow left">
+
+            <h3>Today</h3>
+
+            <p>
+              Eight services, one promise:
+              next level cleaning,
+              done &amp; dusteed.
+            </p>
+
+          </div>
+
+          <!-- IMAGE RIGHT -->
+
+
+<div class="history-image">
+  <img src="images/teepogi.jpg"
+       alt="CLEANTEE today">
+</div>
+
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CUSTOMER REVIEWS (shows only when there are published reviews) -->
+    <section class="home-rv" id="homeRv" hidden>
+      <h2>What our customers say</h2>
+      <p class="sum" id="homeRvSum"></p>
+      <div class="home-rv-grid" id="homeRvGrid"></div>
+      <a class="btn" href="reviews.html">Read all reviews</a>
+    </section>
+
+  </main>
+
+  <!-- ========================================
+       EXISTING CLEANTEE JAVASCRIPT
+  ======================================== -->
+
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/main.js"></script>
+
+<script src="js/enhancements.js"></script>
+<script src="js/extras.js" defer></script>
+<script>
+(function(){
+  var box=document.getElementById("homeRv");if(!box)return;
+  function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  fetch("backend/reviews/list.php",{credentials:"same-origin"}).then(function(r){return r.json()}).then(function(d){
+    var rows=(d.reviews||[]).filter(function(v){return +v.rating>=4&&v.comment}).slice(0,3);
+    if(!d.count||!rows.length)return;
+    document.getElementById("homeRvSum").innerHTML="<b>"+Number(d.average).toFixed(1)+"</b> out of 5 from "+d.count+" review"+(d.count===1?"":"s");
+    document.getElementById("homeRvGrid").innerHTML=rows.map(function(v){
+      var n=Math.max(0,Math.min(5,+v.rating|0));
+      return '<div class="home-rv-card"><div class="st" aria-label="'+n+' out of 5">'+"★".repeat(n)+"☆".repeat(5-n)+"</div><p>“"+esc(v.comment)+"”</p><small>"+esc(v.name||"Customer")+(v.service?" · "+esc(v.service):"")+"</small></div>";
+    }).join("");
+    box.hidden=false;
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>

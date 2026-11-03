@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Log in or Sign up | CLEANTEE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="images/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/bubbles.css">
+
+  <style>
+  /* SHOW / HIDE PASSWORD (eye button) */
+  .pw { position: relative; }
+  .pw input { padding-right: 52px; }
+  .pw input::-ms-reveal { display: none; } /* hide Edge's built-in eye so there is only one */
+  .pw .eye {
+    position: absolute;
+    right: 7px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--mu);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: color .2s, background .2s;
+  }
+  .pw .eye:hover { color: var(--bl); background: rgba(47, 127, 216, .12); }
+  .pw .eye:focus-visible { outline: 3px solid var(--bl); outline-offset: 1px; }
+  .pw .eye svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .pw .eye .slash { display: none; }
+  .pw.shown .eye .slash { display: block; }
+  </style>
+<link rel="stylesheet" href="css/enhancements.css">
+</head>
+<body data-page="auth"><main><div class="ph"><h1>Password recovery</h1><p>Recover access to your client account.</p></div><div class="w">
+<form id="forgot"><label>Email address<input name="email" type="email" autocomplete="email" required></label><button class="btn" type="submit">Send reset link</button></form>
+<form id="reset" hidden><input name="token" type="hidden"><label>New password (8+ characters)<div class="pw"><input name="password" type="password" minlength="8" autocomplete="new-password" required><button class="eye" type="button" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><line class="slash" x1="3" y1="3" x2="21" y2="21"/></svg></button></div></label><label>Confirm password<div class="pw"><input name="confirm" type="password" minlength="8" autocomplete="new-password" required><button class="eye" type="button" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><line class="slash" x1="3" y1="3" x2="21" y2="21"/></svg></button></div></label><button class="btn" type="submit">Change password</button></form>
+<p id="result" role="status" aria-live="polite"></p><a href="auth.html">Back to log in</a></div></main>
+<script src="js/config.js"></script><script src="js/api.js"></script><script src="js/layout.js"></script><script>
+const token=new URLSearchParams(location.hash.slice(1)).get('token');
+if(token){document.getElementById('forgot').hidden=true;document.getElementById('reset').hidden=false;document.querySelector('[name=token]').value=token;history.replaceState(null,'','reset.html');}
+document.querySelectorAll('.eye').forEach(b=>b.onclick=()=>{const i=b.previousElementSibling,shown=i.type==='password';i.type=shown?'text':'password';b.closest('.pw').classList.toggle('shown',shown);b.setAttribute('aria-pressed',String(shown));b.setAttribute('aria-label',shown?'Hide password':'Show password')});
+for(const action of ['forgot','reset']){document.getElementById(action).onsubmit=async e=>{e.preventDefault();const f=e.target,b=f.querySelector('button[type=submit]');b.disabled=true;try{const d=await authRequest(action,new FormData(f));document.getElementById('result').textContent=d.message;if(action==='reset'){f.reset();f.hidden=true;}}catch(e){document.getElementById('result').textContent=e.message}finally{b.disabled=false}};}
+</script><script src="js/enhancements.js"></script>
+
+<script src="js/bubbles.js"></script>
+</body></html>

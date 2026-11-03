@@ -1,0 +1,98 @@
+/* CLEANTEE "Aura" look: soft blurred colour glows behind frosted-glass cards.
+   Same brand colours (blue, orange, green). Add ONE line to a page, after the other stylesheets:
+   <link rel="stylesheet" href="css/aura.css">
+   To go back to the old look, remove that line. */
+
+:root{
+  --aura-blue:#2f7fd8;
+  --aura-sky:#8dc0f5;
+  --aura-orange:#f59a0c;
+  --aura-green:#7fd44f;
+  --glass:rgba(255,255,255,.62);
+  --glass-line:rgba(255,255,255,.8);
+}
+
+html{background:#eef5ff}
+body{background:transparent}
+
+/* The aura itself (uses html::after because enhancements.css already uses html::before for the scroll bar): big blurred colour blobs that drift slowly behind everything. */
+html::after{
+  content:"";
+  position:fixed;
+  inset:-15%;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    radial-gradient(38% 34% at 12% 14%, rgba(47,127,216,.55), transparent 70%),
+    radial-gradient(34% 30% at 88% 10%, rgba(245,154,12,.40), transparent 70%),
+    radial-gradient(40% 36% at 78% 78%, rgba(127,212,79,.38), transparent 70%),
+    radial-gradient(36% 34% at 18% 86%, rgba(141,192,245,.60), transparent 70%),
+    radial-gradient(30% 28% at 50% 46%, rgba(255,214,150,.35), transparent 72%);
+  filter:blur(36px) saturate(1.15);
+  animation:auraDrift 26s ease-in-out infinite alternate;
+}
+/* a touch of film grain makes gradients feel richer and removes banding */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  opacity:.07;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+@keyframes auraDrift{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(2.5%,-2%,0) scale(1.06)}
+  100%{transform:translate3d(-2.5%,2.5%,0) scale(1.1)}
+}
+
+/* Top bar, page headings and hero get their own deeper aura */
+header,body > header{
+  background:rgba(10,58,122,.78);
+  backdrop-filter:blur(16px) saturate(1.4);
+  -webkit-backdrop-filter:blur(16px) saturate(1.4);
+  border-bottom:1px solid rgba(255,255,255,.14);
+}
+.ph,.hero{
+  background:
+    radial-gradient(46% 90% at 14% 10%, rgba(61,141,224,.95), transparent 70%),
+    radial-gradient(40% 80% at 90% 0%, rgba(245,154,12,.55), transparent 70%),
+    radial-gradient(44% 90% at 70% 120%, rgba(127,212,79,.50), transparent 70%),
+    linear-gradient(135deg,#0a3a7a,#164f9c);
+}
+footer{
+  background:rgba(10,58,122,.9);
+  backdrop-filter:blur(14px);
+}
+
+/* Frosted-glass surfaces */
+.card,.stat,.tabs,.bx,.ins-box,.cal-day,.cal-c,.note,.req,.job,.staff-card,.sr-card,.empty-card,
+.accordion-trigger,.accordion-panel-content,form:not(.plain){
+  background:var(--glass);
+  backdrop-filter:blur(16px) saturate(1.5);
+  -webkit-backdrop-filter:blur(16px) saturate(1.5);
+  border:1px solid var(--glass-line);
+  box-shadow:0 12px 40px rgba(47,127,216,.14);
+}
+.card:hover,.staff-card:hover,.accordion-trigger:hover{
+  box-shadow:0 22px 56px rgba(47,127,216,.24);
+}
+.mc{
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(22px) saturate(1.5);
+  -webkit-backdrop-filter:blur(22px) saturate(1.5);
+  border:1px solid var(--glass-line);
+}
+.modal{background:rgba(10,40,90,.35);backdrop-filter:blur(6px)}
+.tabs button.on,.btn{box-shadow:0 8px 22px rgba(47,127,216,.32)}
+
+/* keep the glow that follows the cursor subtle on top of the aura */
+#glow{mix-blend-mode:multiply;opacity:.6}
+
+@media (prefers-reduced-motion:reduce){html::after{animation:none}}
+@media (max-width:700px){html::after{filter:blur(28px)}}
+/* browsers without backdrop-filter get a solid readable card */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .card,.stat,.tabs,.bx,.ins-box,.cal-day,.job,.staff-card,.mc{background:rgba(255,255,255,.94)}
+}

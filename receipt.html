@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Booking Receipt | CLEANTEE</title>
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="images/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/enhancements.css">
+  <link rel="stylesheet" href="css/bubbles.css">
+
+  <style>
+    .rcpt{max-width:720px;margin:0 auto;background:#fff;border:1px solid var(--ln);border-radius:24px;padding:30px;box-shadow:0 14px 40px rgba(10,58,122,.08)}
+    .rcpt-head{display:flex;justify-content:space-between;gap:16px;align-items:center;border-bottom:2px solid var(--navy);padding-bottom:16px;margin-bottom:18px;flex-wrap:wrap}
+    .rcpt-head img{height:64px;border-radius:12px}
+    .rcpt h2{font-size:28px;margin:0}
+    .rcpt .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 20px;margin-bottom:18px;font-size:14px}
+    .rcpt .meta b{display:block;color:var(--mu);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+    .rcpt table{min-width:0;width:100%}
+    .rcpt td,.rcpt th{padding:10px 8px}
+    .rcpt .tot{display:flex;justify-content:space-between;font-size:18px;font-weight:700;color:var(--navy);border-top:2px solid var(--navy);padding-top:12px;margin-top:6px}
+    .rcpt .tot.dp{border:0;padding-top:4px;font-size:16px}
+    .rcpt .stamp{display:inline-block;margin-top:14px;padding:6px 16px;border-radius:99px;font-weight:700;font-size:13px}
+    .stamp.ok{background:#dcf5e3;color:#15803d}.stamp.wait{background:#fff4e0;color:#7a4a00}
+    .rcpt .foot{margin-top:20px;color:var(--mu);font-size:12px;line-height:1.7}
+    .rcpt-actions{max-width:720px;margin:18px auto 0;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    .rcpt-ok{display:flex;gap:16px;align-items:center;background:#e9f8ee;border:1px solid #b7e4c5;border-radius:18px;padding:16px 18px;margin-bottom:20px;animation:rc-in .6s cubic-bezier(.2,1.3,.4,1) both}
+    .rcpt-ok .tick{flex:none;width:46px;height:46px;border-radius:50%;background:#18844b;color:#fff;display:grid;place-items:center;font-size:26px;font-weight:700;animation:rc-pop .6s cubic-bezier(.2,1.8,.4,1) .15s both}
+    .rcpt-ok b{font:600 20px var(--hd);color:#0d5c33}
+    .rcpt-next{margin:0 0 20px;padding:16px 18px 16px 38px;background:#f2f8ff;border-radius:18px;color:var(--tx);font-size:14px;line-height:1.7}
+    .rcpt-next li{margin:3px 0}.rcpt-next a{color:var(--bl);font-weight:600}
+    .rcpt .map{font-size:12px;font-weight:600;color:var(--bl);text-decoration:none}
+    @keyframes rc-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+    @keyframes rc-pop{from{transform:scale(0)}to{transform:scale(1)}}
+    @media print{
+      .rcpt-ok,.rcpt-next{display:none!important}
+      header,footer,.ph,.rcpt-actions,#glow,#toast{display:none!important}
+      body{background:#fff}.w{padding:0}.rcpt{border:0;box-shadow:none;padding:0}
+    }
+  </style>
+</head>
+<body data-page="receipt">
+  <main>
+    <div class="ph"><h1>Booking Receipt</h1><p>Keep this for your records.</p></div>
+    <div class="w">
+      <div class="rcpt" id="rcpt"><p style="color:var(--mu)">Loading your receipt…</p></div>
+      <div class="rcpt-actions" id="rcptActions" hidden>
+        <button class="btn" type="button" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        <a class="btn alt" href="history.html" style="color:var(--navy);border-color:var(--ln);background:#fff">Go to My Bookings</a>
+        <a class="btn alt" href="services.html" style="color:var(--navy);border-color:var(--ln);background:#fff">Book another service</a>
+      </div>
+    </div>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const pesos=v=>"₱"+Number(v||0).toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const method={gcash:"GCash / Maya",bank:"Bank transfer",cash:"Cash"};
+  const box=document.getElementById("rcpt");
+  const fail=m=>{box.innerHTML=`<p>${esc(m)} <a href="history.html" style="color:var(--bl);font-weight:600">Back to My Bookings</a></p>`;};
+  (async()=>{
+    try{
+      const ref=new URLSearchParams(location.search).get("ref")||"";
+      const me=await authReady;
+      if(!me){fail("Please log in to see your receipt.");return;}
+      const rows=(await api("booking",null,"GET")).filter(r=>r.checkout_ref===ref);
+      if(!ref||!rows.length){fail("We could not find that receipt.");return;}
+      const first=rows[0],total=rows.reduce((a,r)=>a+Number(r.estimated_total||0),0);
+      const verified=first.payment_status==="Verified";
+      const isNew=new URLSearchParams(location.search).get("new")==="1";
+      const needsProof=first.payment_method!=="cash"&&!verified;
+      if(isNew){const h=document.querySelector(".ph h1"),p=document.querySelector(".ph p");if(h)h.textContent="Booking Received!";if(p)p.textContent="Thank you for choosing CLEANTEE.";document.title="Booking Received | CLEANTEE";}
+      const banner=isNew?`<div class="rcpt-ok"><div class="tick" aria-hidden="true">✓</div><div><b>Thank you, ${esc(String(me.name||"").split(" ")[0]||"friend")}! We received your booking.</b><br><span style="color:var(--mu);font-size:14px">${rows.length>1?rows.length+" bookings are":"Your booking is"} waiting for our review.</span></div></div>
+        <ol class="rcpt-next"><li>We check your down payment${needsProof?` (you can <a href="history.html">upload a screenshot of your receipt</a> to speed this up)`:""}.</li><li>We confirm your schedule and assign your cleaning crew.</li><li>You get an email at every step, and you can follow progress anytime in <a href="history.html">My Bookings</a>.</li></ol>`:"";
+      box.innerHTML=banner+`<div class="rcpt-head"><div><h2>CLEANTEE</h2><div style="color:var(--mu)">Cleaning Services</div></div><img src="images/logo.png" alt="CLEANTEE logo"></div>
+        <div class="meta">
+          <div><b>Checkout reference</b>${esc(ref)}</div>
+          <div><b>Customer</b>${esc(me.name)}</div>
+          <div><b>Payment method</b>${esc(method[first.payment_method]||first.payment_method)}</div>
+          <div><b>Payment reference</b>${esc(first.payment_reference||"—")}</div>
+          <div><b>Date booked</b>${esc(new Date(String(first.created).replace(" ","T")).toLocaleDateString("en-PH",{dateStyle:"medium"}))}</div>
+        </div>
+        <div class="tw" style="border:0"><table><thead><tr><th>Service</th><th>Schedule</th><th>Status</th><th style="text-align:right">Estimate</th></tr></thead><tbody>
+        ${rows.map(r=>`<tr><td><b>${esc(r.service)}</b><br><small>${esc(r.ref)}<br>${esc(r.address)}${r.map_link?`<br><a class="map" href="${esc(r.map_link)}" target="_blank" rel="noopener">📍 Map location</a>`:""}</small></td><td>${esc(r.date)}<br><small>${esc(String(r.time).slice(0,5))}</small></td><td>${esc(r.status)}</td><td style="text-align:right">${esc(pesos(r.estimated_total))}</td></tr>`).join("")}
+        </tbody></table></div>
+        <div class="tot"><span>Estimated total</span><span>${esc(pesos(total))}</span></div>
+        <div class="tot dp"><span>Down payment due</span><span>${esc(pesos(first.down_payment_due))}</span></div>
+        <span class="stamp ${verified?"ok":"wait"}">${verified?"✓ Down payment verified":"Down payment "+esc((first.payment_status||"pending").toLowerCase())}</span>
+        <p class="foot">The estimated total may change after our team confirms the service details and transportation fee. The remaining balance is settled directly with CLEANTEE after the job.<br>Questions? Call or Viber +63 998 577 5917 · cleantee.ph@gmail.com</p>`;
+      document.getElementById("rcptActions").hidden=false;
+    }catch(e){console.error(e);fail("Could not load your receipt.");}
+  })();
+  </script>
+  <script src="js/enhancements.js"></script>
+<script src="js/bubbles.js"></script>
+</body>
+</html>

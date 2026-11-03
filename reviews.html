@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Customer Reviews | CLEANTEE</title>
+  <meta name="description" content="Read what CLEANTEE customers say about our home and office cleaning services in Metro Manila.">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="images/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/enhancements.css">
+  <link rel="stylesheet" href="css/bubbles.css">
+
+  <style>
+    .avg{text-align:center;margin-bottom:26px}
+    .avg b{font:700 56px var(--hd);color:var(--bl)}
+    .stars{color:#f59a0c;letter-spacing:2px}
+    .rv-card .stars{font-size:20px}
+    .rv-card p.q{margin:8px 0;font-size:15px;color:var(--tx)}
+    .rv-card small{color:var(--mu)}
+  </style>
+</head>
+<body data-page="reviews">
+  <main>
+    <div class="ph"><h1>Customer Reviews</h1><p>What our clients say about CLEANTEE.</p></div>
+    <div class="w">
+      <div class="avg" id="avg" hidden><b id="avgNum"></b><div class="stars" id="avgStars" style="font-size:26px"></div><div style="color:var(--mu)" id="avgCount"></div></div>
+      <div class="grid" id="rvs"></div>
+      <p style="text-align:center;margin-top:26px"><a class="btn" href="services.html">Book your cleaning</a></p>
+    </div>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const stars=n=>"★".repeat(n)+"☆".repeat(5-n);
+  (async()=>{
+    const box=document.getElementById("rvs");
+    try{
+      const r=await fetch("backend/reviews/list.php",{credentials:"same-origin"});const d=await r.json();
+      if(!d.ok||!d.reviews.length){box.innerHTML='<div class="empty" style="grid-column:1/-1">No reviews yet. Be the first to rate us after your cleaning!</div>';return;}
+      document.getElementById("avg").hidden=false;
+      document.getElementById("avgNum").textContent=Number(d.average).toFixed(1);
+      document.getElementById("avgStars").textContent=stars(Math.round(d.average));
+      document.getElementById("avgCount").textContent="Based on "+d.count+" review"+(d.count>1?"s":"");
+      box.innerHTML=d.reviews.map(v=>`<div class="card rv-card"><div class="stars" aria-label="${esc(v.rating)} out of 5">${stars(+v.rating)}</div>${v.comment?`<p class="q">“${esc(v.comment)}”</p>`:""}<small><b>${esc(v.name)}</b>${v.service?" · "+esc(v.service):""}</small></div>`).join("");
+    }catch(e){box.innerHTML='<div class="empty" style="grid-column:1/-1">Reviews are unavailable right now.</div>';}
+  })();
+  </script>
+  <script src="js/enhancements.js"></script>
+  
+<script src="js/bubbles.js"></script>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Admin | CLEANTEE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="images/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/enhancements.css">
+<link rel="stylesheet" href="css/bubbles.css">
+<style>/* keep popups and messages floating even if another stylesheet changes element positions */.modal{position:fixed!important}#toast{position:fixed!important}</style>
+<style>
+  .badge{display:inline-block;padding:3px 11px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap;background:#eef2f8;color:#4d6485}
+  .b-New{background:#fff1d6;color:#9a5b00}.b-Confirmed{background:#dcebff;color:#0a3a7a}.b-Assigned{background:#e4e0ff;color:#3d2fa0}
+  .b-In-Progress{background:#d4f1fb;color:#00607f}.b-Done,.b-Verified{background:#dff3d5;color:#2b6a12}
+  .b-Cancelled,.b-Declined{background:#fde0e0;color:#a31d1d}.b-Awaiting-payment,.b-Awaiting-verification{background:#fff1d6;color:#9a5b00}
+  .bar{flex-wrap:wrap;gap:10px;align-items:center}
+  .bar .tabs button{flex:1 1 auto;white-space:nowrap;padding:10px 14px}
+  #csv{margin-left:auto}
+  #out2{margin-left:auto}#csv:not([hidden])+#out2{margin-left:0}
+  .fbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
+  .fbar button.fc{border:1.5px solid var(--ln);background:var(--sf);color:var(--mu);font:600 13px var(--bd);padding:7px 14px;border-radius:99px;cursor:pointer}
+  .fbar button.fc.on{background:var(--bl);border-color:var(--bl);color:#fff}
+  .fbar input{max-width:260px;padding:9px 14px;margin-left:auto}
+  .short{color:#b3560a;font-weight:600}.ok{color:#2b6a12;font-weight:600}
+  .mini{border:1px solid var(--ln);background:#fff;color:var(--tx);border-radius:99px;padding:5px 12px;font:600 12px var(--bd);cursor:pointer}
+  .mini.red{color:#a31d1d;border-color:#f0c4c4}
+  .btn.dng{background:#c62828;color:#fff;box-shadow:none}.btn.ghost{background:#fff;color:var(--tx);border:1px solid var(--ln);box-shadow:none}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none!important}
+  #bkModal .mc{max-width:780px}
+  #bkModal h3{font-size:24px;color:var(--navy)}
+  #bkModal h4{font:600 17px var(--hd);color:var(--navy);margin:0 0 8px}
+  #bkModal h5{font:600 13px var(--bd);color:var(--mu);margin:14px 0 6px}
+  .steps{display:flex;list-style:none;padding:0;margin:18px 0;gap:6px}
+  .steps li{flex:1;text-align:center;font-size:12px;font-weight:600;color:var(--mu);padding:8px 4px;border-radius:10px;background:#eef2f8}
+  .steps li.done{background:#dff3d5;color:#2b6a12}.steps li.cur{background:var(--bl);color:#fff}
+  .nextstep{background:#fff7e8;border-left:4px solid var(--or);border-radius:10px;padding:10px 14px;font-size:14px;margin-bottom:14px}
+  .nextstep.bad{background:#fdecec;border-color:#c62828}
+  .dg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px 18px;margin-bottom:14px}
+  .dg small,.mu{color:var(--mu)}.dg small{display:block;font-size:12px}
+  .bx{border:1px solid var(--ln);border-radius:16px;padding:14px 16px;margin-bottom:14px;background:#fbfdff}
+  .crew{list-style:none;padding:0;margin:0 0 6px}.crew li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed var(--ln)}
+  .acts{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 16px;align-items:center}
+  .acts .btn{padding:12px 26px;font-size:15px}
+  .cal-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}.cal-h h3{margin:0;min-width:170px;text-align:center}
+  .cal-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+  .cal-w{font:600 12px var(--bd);color:var(--mu);text-align:center;padding:4px 0}
+  .cal-c{min-height:92px;border:1.5px solid var(--ln);border-radius:14px;background:var(--sf);padding:6px;text-align:left;display:flex;flex-direction:column;gap:3px;cursor:pointer;font:inherit;color:var(--tx);transition:transform .15s,box-shadow .2s,border-color .2s;overflow:hidden}
+  .cal-c.off{border:0;background:none;cursor:default}
+  .cal-c:not(.off):hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(47,127,216,.2);border-color:var(--bl)}
+  .cal-c.today{border-color:var(--or)}.cal-c.sel{background:#eef5ff;border-color:var(--bl);box-shadow:0 0 0 3px rgba(47,127,216,.18)}
+  .cal-c .n{font-weight:700;font-size:13px}
+  .cal-e{display:block;font-size:11px;line-height:1.3;border-radius:6px;padding:2px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cal-more{font-size:11px;color:var(--mu);font-weight:600}
+  .cal-day{margin-top:16px;background:var(--sf);border:1px solid var(--ln);border-radius:18px;padding:16px 18px}
+  .cal-day h4{margin:0 0 8px}.cal-day ul{list-style:none;padding:0;margin:0}.cal-day li{padding:8px 0;border-bottom:1px dashed var(--ln);display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+  .ins-k{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px}
+  .ins-k .stat{min-width:0;padding:20px 18px;min-height:0}
+  .ins-k .stat b{display:block;font-size:clamp(24px,2.6vw,32px);line-height:1.15;margin-bottom:4px;overflow-wrap:anywhere}
+  .ins-box{background:var(--sf);border:1px solid var(--ln);border-radius:18px;padding:18px 20px;margin-bottom:18px}
+  .ins-box h4{margin:0 0 12px}
+  .bars{display:flex;gap:12px;align-items:stretch;height:230px}
+  .bcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;min-width:0}
+  .bcol .bfill{width:68%;background:var(--bl);border-radius:10px 10px 0 0;min-height:3px;transition:height .6s cubic-bezier(.2,.9,.3,1)}
+  .bcol .bval{font-size:11px;font-weight:600;color:var(--navy)}.bcol .blab{font-size:12px;font-weight:600}.bcol small{color:var(--mu);font-size:11px}
+  .hbar{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;margin:7px 0;font-size:13px}
+  .hbar i{display:block;height:14px;border-radius:8px;background:var(--or);transition:width .6s}
+  @media(max-width:700px){.cal-c{min-height:64px}.cal-e{display:none}.hbar{grid-template-columns:100px 1fr 50px}}
+  .req{border:1.5px solid #f3c77a;background:#fff9ec;border-radius:14px;padding:12px 14px;margin-bottom:10px}
+  .req.done{border-color:var(--ln);background:#fbfdff}
+  .logl{list-style:none;padding:0;margin:0;font-size:13px}.logl li{padding:7px 0;border-bottom:1px dashed var(--ln)}.logl time{color:var(--mu)}
+</style>
+</head>
+<body data-page="admin">
+  <main>
+    <div class="ph">
+      <h1>Admin dashboard</h1>
+      <p>Bookings and reports in one place.</p>
+    </div>
+    <div class="w">
+      <section id="dash" hidden>
+        <div class="stats" id="kpi"></div>
+        <div class="bar">
+          <div class="tabs" style="max-width:none;flex-wrap:nowrap;flex:1 1 100%;overflow-x:auto;scrollbar-width:thin;gap:2px"><button type="button" class="on" data-k="booking">Bookings</button><button type="button" data-k="calendar">Calendar</button><button type="button" data-k="insights">Insights</button><button type="button" data-k="report">Reports</button><button type="button" data-k="customer">Customers</button><button type="button" data-k="review">Reviews</button><button type="button" data-k="staff">Staff</button><button type="button" data-k="activity">Activity</button></div>
+          <button class="btn" id="csv" type="button">Export CSV</button>
+          <button class="btn alt" id="out2" type="button" style="color:var(--tx);border-color:var(--ln);margin:0">Log out</button>
+        </div>
+        <div id="bkTools" class="fbar" hidden></div>
+        <div id="genTools" class="fbar" hidden></div>
+        <div id="viewBox" hidden></div>
+        <div id="staffPanel" hidden style="margin:16px 0">
+          <h3>Staff management</h3>
+          <form id="staffForm" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
+            <input type="hidden" name="id" value="0">
+            <input name="name" placeholder="Full name" required minlength="2">
+            <input name="position" placeholder="Position" required minlength="2">
+            <input name="phone" placeholder="Phone (09XXXXXXXXX)">
+            <input name="email" type="email" placeholder="Email (optional)">
+            <select name="status"><option>Active</option><option>Inactive</option></select>
+            <button type="submit" class="btn">Save staff</button>
+            <button type="reset" class="btn alt" onclick="this.form.elements.id.value=0">Clear</button>
+          </form>
+          <p class="mu" style="margin-bottom:8px">To assign staff, open a booking from the Bookings tab. Assignments are made there so availability can be checked.</p>
+          <div id="assignmentList"></div>
+        </div>
+        <div class="tw" id="tw"><table><thead id="th"></thead><tbody id="tb"></tbody></table></div>
+      </section>
+    </div>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+
+  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const COLS={booking:[["ref","Ref"],["created","Received"],["name","Customer"],["phone","Phone"],["service","Service"],["hours","Hrs"],["cleaners","Cleaners"],["date","Date"],["time","Time"],["address","Address"],["notes","Notes"],["estimated_total","Estimate (PHP)"],["crew","Crew"],["payment_status","Payment"],["reason","Reason"]],
+    report:[["ref","Ref"],["created","Received"],["name","Customer"],["contact","Contact"],["booking_ref","Booking"],["service_date","Service date"],["type","Issue"],["severity","Urgency"],["details","Details"],["photos","Photos"]],
+    staff:[["id","ID"],["full_name","Name"],["position","Position"],["phone","Phone"],["email","Email"]],
+    customer:[["created","Created"],["name","Name"],["email","Email"],["phone","Mobile"]],
+    review:[["created","Date"],["name","Customer"],["service","Service"],["rating","Rating"],["comment","Comment"],["booking_ref","Booking"]],
+    activity:[["created","When"],["area","Area"],["admin","By"],["action","Action"],["target","Target"],["detail","Details"]]};
+  const STATUS={report:["New","Investigating","Resolved"],customer:["Active","Suspended"],staff:["Active","Inactive"],review:["Pending","Published","Hidden"]};
+  const BK_FLOW=["New","Confirmed","Assigned","In Progress","Done"];
+  const BK_FILTERS=["All","New","Requests","Confirmed","Assigned","In Progress","Done","Closed"];
+  const NEXT={
+    "New":"Review the details and the down payment, then accept or decline.",
+    "Confirmed":"Booking accepted. Assign crew to continue.",
+    "Assigned":"Crew is set. Start the job on the day of service.",
+    "In Progress":"The job is underway. Mark it done when the crew finishes.",
+    "Done":"This job is complete.","Cancelled":"This booking was cancelled.","Declined":"This booking was declined."};
+  let kind="booking",DATA={booking:[],report:[],customer:[],staff:[],review:[],activity:[]};let genQ="",gFrom="",gTo="",INS=null,calM=(()=>{const d=new Date();d.setDate(1);return d})(),calSel=null;let ASSIGNMENTS=[];
+  let bkFilter="All",bkQuery="",modalRef=null,detail=null;
+  const toast=m=>{const t=$("#toast");if(t){t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),4000)}else alert(m)};
+  const key=o=>kind==="customer"?o.email:kind==="review"?String(o.id):o.ref;
+  const fmt=(k,v)=>k==="created"&&v?new Date(String(v).replace(" ","T")).toLocaleString("en-PH",{dateStyle:"medium",timeStyle:"short"}):k==="rating"?"★".repeat(+v||0)+"☆".repeat(5-(+v||0)):v;
+  const php=n=>"₱"+Number(n||0).toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const badge=s=>`<span class="badge b-${esc(String(s||"").replace(/\s+/g,"-"))}">${esc(s||"—")}</span>`;
+  const fmtDate=d=>d?new Date(d+"T00:00:00").toLocaleDateString("en-PH",{dateStyle:"medium"}):"";
+  const fmtTime=t=>{if(!t)return"";const [h,m]=String(t).split(":");const hr=+h;return `${((hr+11)%12)+1}:${m} ${hr<12?"AM":"PM"}`};
+  const todayManila=()=>new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Manila"}).format(new Date());
+
+  async function adminCall(endpoint,body=null){
+    await authReady;
+    const [ep,qs]=endpoint.split("?");
+    const opts={credentials:"same-origin"};
+    if(body){opts.method="POST";opts.headers={"X-CSRF-Token":ctCsrf};opts.body=new URLSearchParams(body);}
+    const r=await fetch("backend/admin/"+ep+".php"+(qs?"?"+qs:""),opts);
+    const d=await r.json();
+    if(!r.ok||!d.ok)throw new Error(d.message||"Request failed");
+    return d;
+  }
+  async function load(){
+    try {const d=await adminCall("list");const staff=await adminCall("staff");DATA={booking:d.booking,report:d.report,customer:d.customer,staff:staff.staff,review:DATA.review||[],activity:DATA.activity||[]};ASSIGNMENTS=staff.assignments;INS=null;draw();}
+    catch(e){toast("Could not load admin data: "+e.message);}
+  }
+
+  /* ---------- Bookings tab ---------- */
+  const isClosed=s=>s==="Cancelled"||s==="Declined";
+  function bookingRows(){
+    const q=bkQuery.trim().toLowerCase();
+    return DATA.booking.filter(o=>{
+      const okStatus=bkFilter==="All"||(bkFilter==="Requests"?+o.pending_request>0:bkFilter==="Closed"?isClosed(o.status):o.status===bkFilter);
+      return okStatus&&(!q||[o.ref,o.name,o.phone,o.service,o.address,o.crew].join(" ").toLowerCase().includes(q));
+    });
+  }
+  function drawBookings(){
+    const all=DATA.booking,count=f=>f==="All"?all.length:f==="Requests"?all.filter(o=>+o.pending_request>0).length:f==="Closed"?all.filter(o=>isClosed(o.status)).length:all.filter(o=>o.status===f).length;
+    const tools=$("#bkTools");
+    tools.innerHTML=BK_FILTERS.map(f=>`<button type="button" class="fc${f===bkFilter?" on":""}" data-f="${f}">${f} (${count(f)})</button>`).join("")+`<input id="bkSearch" type="search" placeholder="Search ref, name, phone, crew…" value="${esc(bkQuery)}" aria-label="Search bookings">`;
+    $("#th").innerHTML="<tr><th>Ref</th><th>Customer</th><th>Service</th><th>Schedule</th><th>Crew</th><th>Payment</th><th>Status</th><th></th></tr>";
+    const rows=bookingRows();
+    $("#tb").innerHTML=rows.length?rows.map(o=>{
+      const need=+o.cleaners||1,have=+o.crew_count||0,live=["Confirmed","Assigned","In Progress"].includes(o.status);
+      const crew=live?`<span class="${have<need?"short":"ok"}">${have}/${need}</span>${o.crew?"<br><small>"+esc(o.crew)+"</small>":""}`:(o.crew?esc(o.crew):"—");
+      const label=o.status==="New"?"Review":o.status==="Confirmed"?"Assign crew":"Open";
+      return `<tr><td><b>${esc(o.ref)}</b></td><td>${esc(o.name)}<br><small>${esc(o.phone)}</small></td><td>${esc(o.service)}</td><td>${esc(fmtDate(o.date))}<br><small>${esc(fmtTime(o.time))}</small></td><td>${crew}</td><td>${o.payment_status?badge(o.payment_status):"—"}${+o.has_proof?" 📎":""}</td><td>${badge(o.status)}${+o.pending_request?`<br><span class="badge b-New" style="margin-top:4px">Change request</span>`:""}</td><td><button type="button" class="${o.status==="New"||o.status==="Confirmed"?"btn":"mini"}" style="${o.status==="New"||o.status==="Confirmed"?"padding:8px 18px;font-size:13px":""}" data-open-booking="${esc(o.ref)}">${label}</button></td></tr>`;
+    }).join(""):`<tr><td class="empty" colspan="8">No bookings match.</td></tr>`;
+  }
+  $("#bkTools").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(!b)return;bkFilter=b.dataset.f;drawBookings();});
+  $("#bkTools").addEventListener("input",e=>{if(e.target.id!=="bkSearch")return;bkQuery=e.target.value;const pos=e.target.selectionStart;drawBookings();const i=$("#bkSearch");i.focus();i.setSelectionRange(pos,pos);});
+
+  function draw(){
+    const b=DATA.booking,r=DATA.report,n=a=>a.filter(x=>x.status==="New").length,today=todayManila();
+    const needCrew=b.filter(x=>x.status==="Confirmed").length,todayJobs=b.filter(x=>x.date===today&&["Confirmed","Assigned","In Progress"].includes(x.status)).length;
+    $("#kpi").innerHTML=[[n(b),"New bookings to review"],[needCrew,"Need crew"],[todayJobs,"Jobs today"],[n(r),"New reports"],[b.filter(x=>+x.pending_request>0).length,"Customer requests"],[DATA.customer.length,"Customers"]].map(x=>`<div class="stat"><b>${x[0]}</b>${x[1]}</div>`).join("");
+    $$(".tabs button[data-k]").forEach(t=>t.classList.toggle("on",t.dataset.k===kind));
+    document.getElementById("staffPanel").hidden=kind!=="staff";
+    $("#bkTools").hidden=kind!=="booking";
+    const isView=kind==="calendar"||kind==="insights";
+    document.getElementById("tw").hidden=isView;document.getElementById("viewBox").hidden=!isView;$("#csv").hidden=isView;
+    const gt=$("#genTools");gt.hidden=!["report","customer","review","activity"].includes(kind);
+    if(!gt.hidden)drawGenTools();
+    if(kind==="calendar"){drawCalendar();return;}
+    if(kind==="insights"){drawInsights();return;}
+    if(kind==="booking"){drawBookings();return;}
+    if(kind==="staff")drawAssignments();
+    drawGeneric();
+  }
+  /* ---------- Calendar and Insights views ---------- */
+  const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  const CAL_COLORS={New:"#fff1d6;color:#9a5b00","Confirmed":"#dcebff;color:#0a3a7a","Assigned":"#e4e0ff;color:#3d2fa0","In Progress":"#d4f1fb;color:#00607f","Done":"#dff3d5;color:#2b6a12"};
+  function drawCalendar(){
+    const box=document.getElementById("viewBox"),y=calM.getFullYear(),m=calM.getMonth();
+    const live=DATA.booking.filter(b=>!["Cancelled","Declined"].includes(b.status));
+    const by={};live.forEach(b=>{(by[b.date]=by[b.date]||[]).push(b)});
+    Object.values(by).forEach(a=>a.sort((p,q)=>String(p.time).localeCompare(String(q.time))));
+    const first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),today=todayManila();
+    let cells=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(w=>`<div class="cal-w">${w}</div>`).join("");
+    for(let i=0;i<first.getDay();i++)cells+='<div class="cal-c off"></div>';
+    for(let d=1;d<=days;d++){
+      const key=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0"),list=by[key]||[];
+      cells+=`<button type="button" class="cal-c${key===today?" today":""}${key===calSel?" sel":""}" data-cal-day="${key}"><span class="n">${d}</span>${list.slice(0,2).map(b=>`<span class="cal-e" style="background:${CAL_COLORS[b.status]||"#eef2f8;color:#4d6485"}">${esc(fmtTime(b.time))} ${esc(b.service)}</span>`).join("")}${list.length>2?`<span class="cal-more">+${list.length-2} more</span>`:""}</button>`;
+    }
+    const sel=calSel&&by[calSel]||[];
+    const dayBox=calSel?`<div class="cal-day"><h4>${esc(fmtDate(calSel))} · ${sel.length} booking${sel.length===1?"":"s"}</h4>${sel.length?"<ul>"+sel.map(b=>`<li><span><b>${esc(fmtTime(b.time))}</b> · ${esc(b.service)} · ${esc(b.name)}<br><small class="mu">${esc(b.address)}${b.crew?" · Crew: "+esc(b.crew):""}</small></span><span>${badge(b.status)} <button type="button" class="mini" data-open-booking="${esc(b.ref)}">Open</button></span></li>`).join("")+"</ul>":'<p class="mu">No bookings this day.</p>'}</div>`:'<p class="mu" style="margin-top:12px">Tap a day to see its bookings. Cancelled and declined bookings are not shown.</p>';
+    box.innerHTML=`<div class="cal-h"><button type="button" class="mini" data-cal-nav="-1">‹ Prev</button><h3>${calM.toLocaleDateString("en-PH",{month:"long",year:"numeric"})}</h3><button type="button" class="mini" data-cal-nav="1">Next ›</button><button type="button" class="mini" data-cal-nav="0">Today</button></div><div class="cal-g">${cells}</div>${dayBox}`;
+  }
+  async function drawInsights(){
+    const box=document.getElementById("viewBox");
+    if(!INS){
+      box.innerHTML='<p class="mu">Loading insights…</p>';
+      try{INS=await adminCall("insights");}
+      catch(e){box.innerHTML=`<p class="mu">Could not load insights: ${esc(e.message)}. Make sure sql/04_improvements.sql was imported and backend/admin/insights.php was uploaded.</p>`;return;}
+      if(kind!=="insights")return;
+    }
+    const t=INS.totals,pay=INS.payments,max=Math.max(1,...INS.months.map(x=>x.bookings)),smax=Math.max(1,...INS.services.map(x=>+x.bookings));
+    const kpi=[[t.bookings,"Total bookings"],[t.open,"Open jobs"],[t.done,"Completed"],["₱"+Math.round(t.revenue).toLocaleString("en-PH"),"Income from completed jobs"],[t.cancel_rate+"%","Cancelled or declined"],[pay.verified,"Payments verified"],[pay.unverified,"Payments waiting"],[INS.rating.average==null?"—":INS.rating.average+" ★","Average rating ("+INS.rating.count+")"]];
+    box.innerHTML=`<div class="ins-k">${kpi.map(k=>`<div class="stat"><b>${esc(k[0])}</b>${esc(k[1])}</div>`).join("")}</div>
+      <div class="ins-box"><h4>Bookings per month (by schedule date)</h4><div class="bars">${INS.months.map(x=>`<div class="bcol"><span class="bval">${x.bookings}</span><div class="bfill" style="height:${Math.round(x.bookings/max*100)}%"></div><span class="blab">${esc(x.label)}</span><small>${esc(php(x.revenue))}</small></div>`).join("")}</div><p class="mu" style="margin-top:8px">Amounts under each month are income from completed jobs.</p></div>
+      <div class="ins-box"><h4>Most booked services</h4>${INS.services.length?INS.services.map(s=>`<div class="hbar"><span>${esc(s.name)}</span><i style="width:${Math.round(s.bookings/smax*100)}%"></i><b>${esc(s.bookings)}</b></div>`).join(""):'<p class="mu">No bookings yet.</p>'}</div>`;
+  }
+  document.getElementById("viewBox").addEventListener("click",e=>{
+    const o=e.target.closest("[data-open-booking]");if(o){openBooking(o.dataset.openBooking);return;}
+    const n=e.target.closest("[data-cal-nav]");
+    if(n){const v=+n.dataset.calNav;if(v===0){const d=new Date();d.setDate(1);calM=d;}else{calM=new Date(calM.getFullYear(),calM.getMonth()+v,1);}calSel=null;drawCalendar();return;}
+    const c=e.target.closest("[data-cal-day]");if(c){calSel=c.dataset.calDay;drawCalendar();}
+  });
+  /* ---------- search + date filters for the list tabs ---------- */
+  function genRows(){
+    const rows=DATA[kind]||[];if(!["report","customer","review","activity"].includes(kind))return rows;
+    const q=genQ.trim().toLowerCase();
+    return rows.filter(o=>{
+      const d=String(o.created||"").slice(0,10);
+      if(gFrom&&d<gFrom)return false;if(gTo&&d>gTo)return false;
+      return !q||Object.values(o).join(" ").toLowerCase().includes(q);
+    });
+  }
+  function drawGenTools(){
+    document.getElementById("genTools").innerHTML=`<input id="gSearch" type="search" placeholder="Search…" value="${esc(genQ)}" aria-label="Search" style="margin-left:0"><label class="mu" style="margin:0">From <input id="gFrom" type="date" value="${esc(gFrom)}" style="width:auto;display:inline-block;padding:7px 10px;margin:0"></label><label class="mu" style="margin:0">To <input id="gTo" type="date" value="${esc(gTo)}" style="width:auto;display:inline-block;padding:7px 10px;margin:0"></label><button type="button" class="fc" id="gClear">Clear filters</button>`;
+  }
+  document.getElementById("genTools").addEventListener("input",e=>{
+    if(e.target.id==="gSearch")genQ=e.target.value;else if(e.target.id==="gFrom")gFrom=e.target.value;else if(e.target.id==="gTo")gTo=e.target.value;else return;
+    drawGeneric();
+  });
+  document.getElementById("genTools").addEventListener("click",e=>{if(e.target.id!=="gClear")return;genQ=gFrom=gTo="";drawGenTools();drawGeneric();});
+  function drawGeneric(){
+    const c=COLS[kind],rows=genRows(),hasStatus=kind!=="activity";
+    $("#th").innerHTML="<tr>"+c.map(x=>`<th>${x[1]}</th>`).join("")+(hasStatus?"<th>Status</th>":"")+"</tr>";
+    $("#tb").innerHTML=rows.length?rows.map(o=>"<tr>"+c.map(x=>`<td>${esc(fmt(x[0],o[x[0]]))}</td>`).join("")+(hasStatus?`<td>${kind==="report"?`<button type="button" data-report-photos="${esc(o.ref)}">Photos (${esc(o.photos)})</button> `:""}${kind==="staff"?`<button type="button" data-edit-staff="${esc(o.id)}">Edit</button> <button type="button" class="mini" data-staff-login="${esc(o.id)}">${o.user_id?"Reset login":"Create login"}</button> <span>${esc(o.status)}</span>`:`${kind==="customer"?`<button type="button" class="mini" data-reset-pw="${esc(o.id)}">Reset password</button> `:""}<select aria-label="Change status" data-ref="${esc(key(o))}">${STATUS[kind].map(s=>`<option${s===o.status?" selected":""}>${s}</option>`).join("")}</select>`}</td>`:"")+"</tr>").join(""):`<tr><td class="empty" colspan="${c.length+(hasStatus?1:0)}">${(genQ||gFrom||gTo)?"No records match your filters.":"No "+kind+" records yet."}</td></tr>`;
+  }
+
+  /* ---------- Booking review panel ---------- */
+  function ensureModal(){
+    let m=document.getElementById("bkModal");
+    if(!m){m=document.createElement("div");m.id="bkModal";m.className="modal";m.hidden=true;m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");document.body.appendChild(m);m.addEventListener("click",modalClick);}
+    return m;
+  }
+  function closeModal(){const m=document.getElementById("bkModal");if(m)m.hidden=true;modalRef=null;detail=null;}
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&modalRef)closeModal();});
+  async function openBooking(ref){
+    try{modalRef=ref;detail=await adminCall("booking_action?action=detail&ref="+encodeURIComponent(ref));renderModal();}
+    catch(e){modalRef=null;toast("Could not open booking: "+e.message);}
+  }
+  function renderModal(){
+    const m=ensureModal(),{booking:b,payment:p,crew,staff,log}=detail,s=b.status,closed=isClosed(s),need=+b.cleaners||1;
+    const idx=BK_FLOW.indexOf(s);
+    const steps=closed?"":`<ol class="steps">${BK_FLOW.map((x,i)=>`<li class="${i<idx?"done":""}${i===idx?" cur":""}">${x}</li>`).join("")}</ol>`;
+    const cell=(k,v)=>`<div><small>${k}</small>${esc(v||"—")}</div>`;
+    const place=[b.address,b.city].filter(Boolean).join(", ")+(b.unit_number?" · "+b.unit_number:"");
+    const details=`<div class="dg">${cell("Customer",b.name)}${cell("Phone",b.phone)}${cell("Email",b.email)}${cell("Service",b.service)}${cell("Date",fmtDate(b.date))}${cell("Time",fmtTime(b.time))}${cell("Cleaners needed",need)}${cell("Hours",b.hours)}${cell("Property",[b.property_type,b.sqm?b.sqm+" sqm":"",b.floors?b.floors+" floor(s)":""].filter(Boolean).join(" · "))}${cell("Estimate",php(b.estimated_total))}</div><div class="dg">${cell("Service address",place)}${cell("Customer notes",b.notes)}</div><p style="margin:8px 0 0"><a href="${esc(b.map_link||("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent([b.address,b.city,"Philippines"].filter(Boolean).join(", "))))}" target="_blank" rel="noopener" style="color:var(--bl);font-weight:600">📍 ${b.map_link?"Open the customer's map location":"Find this address on Google Maps"}</a></p>`;
+    const blocked=!!p&&p.status!=="Verified";
+    const proofBox=p=>{
+      if(p.method==="cash")return "";
+      if(!p.proof_at)return `<p class="short" style="margin:8px 0">No payment screenshot uploaded yet.</p>`;
+      const u="backend/admin/payment_proof.php?ref="+encodeURIComponent(p.checkout_ref);
+      return `<div class="proofbox"><h5 style="margin:12px 0 6px">Payment screenshot <small class="mu">uploaded ${esc(new Date(String(p.proof_at).replace(" ","T")).toLocaleString("en-PH",{dateStyle:"medium",timeStyle:"short"}))}</small></h5><a href="${u}" target="_blank" rel="noopener" title="Open full size"><img src="${u}" alt="Payment screenshot" loading="lazy" style="display:block;max-width:100%;max-height:340px;border:1px solid var(--ln);border-radius:12px;background:#fff"></a><p class="mu" style="margin:6px 0 10px"><a href="${u}" target="_blank" rel="noopener">Open full size</a> · Check the amount (${php(p.due)}), the reference and the receiver name before verifying.</p>${p.status!=="Verified"?(p.proof_requested_at?`<p class="short" style="margin:0 0 8px">Waiting for a new receipt from the customer${p.proof_request_note?" · "+esc(p.proof_request_note):""} <button type="button" class="btn ghost" style="padding:5px 14px;font-size:13px" data-proofreq="clear" data-co="${esc(p.checkout_ref)}">Cancel request</button></p>`:`<p style="margin:0 0 8px"><button type="button" class="btn ghost" style="padding:7px 16px;font-size:13px" data-proofreq="request" data-co="${esc(p.checkout_ref)}">Ask customer to send a new receipt</button></p>`):""}</div>`;
+    };
+    const pay=p?`<div class="bx"><h4>Down payment</h4><p>${badge(p.status)} <span class="mu">${esc(p.method)} · due ${php(p.due)}${p.payment_reference?" · ref "+esc(p.payment_reference):""}</span></p>${proofBox(p)}${blocked&&!closed?`<div class="acts" style="margin-bottom:0"><button type="button" class="btn ghost" style="padding:9px 20px;font-size:14px" data-verify="${esc(p.checkout_ref)}" data-due="${esc(p.due)}">Verify payment received</button></div>`:""}</div>`:"";
+    let crewBox="";
+    if(["Confirmed","Assigned","In Progress"].includes(s)){
+      const have=new Set(crew.map(c=>String(c.id))),canEdit=s!=="In Progress";
+      const free=staff.filter(x=>!have.has(String(x.id)));
+      crewBox=`<div class="bx"><h4>Crew <small class="${crew.length<need?"short":"ok"}">${crew.length} of ${need} cleaner${need>1?"s":""} assigned</small></h4>`+
+        (crew.length?`<ul class="crew">${crew.map(c=>`<li><span>${esc(c.name)} <small class="mu">${esc(c.position)}${c.phone?" · "+esc(c.phone):""}</small></span>${canEdit?`<button type="button" class="mini red" data-unassign="${esc(c.id)}">Remove</button>`:""}</li>`).join("")}</ul>`:`<p class="mu">No one assigned yet.</p>`)+
+        (canEdit?`<h5>Available staff on ${esc(fmtDate(b.date))}</h5>`+(free.length?free.map(x=>`<label class="chk"><input type="checkbox" name="pick" value="${esc(x.id)}"${x.busy?" disabled":""}><span>${esc(x.name)} <small class="mu">${esc(x.position)}</small>${x.busy?` <small class="short">Busy: ${esc(x.busy.ref)} (${esc(x.busy.from)}–${esc(x.busy.to)})</small>`:""}</span></label>`).join("")+`<div class="acts" style="margin:12px 0 0"><button type="button" class="btn" data-assign>Assign selected</button></div>`:`<p class="mu">No other active staff. Add staff in the Staff tab.</p>`):"")+`</div>`;
+    }
+    const acts=[];let hint="";
+    if(s==="New"){acts.push(`<button type="button" class="btn" data-act="accept"${blocked?" disabled":""}>Accept booking</button>`,`<button type="button" class="btn dng" data-act="decline">Decline</button>`);if(blocked)hint="Verify the down payment above before you can accept.";}
+    if(s==="Assigned")acts.push(`<button type="button" class="btn" data-act="start">Start job</button>`);
+    if(s==="In Progress")acts.push(`<button type="button" class="btn" data-act="complete">Mark as done</button>`);
+    if(s==="Confirmed"||s==="Assigned")acts.push(`<button type="button" class="btn dng" data-act="cancel">Cancel booking</button>`);
+    const next=`<div class="nextstep${closed?" bad":""}">${esc(NEXT[s]||"")}${b.reason&&closed?" Reason: "+esc(b.reason):""}</div>`;
+    const logHtml=log.length?`<ul class="logl">${log.map(l=>`<li><b>${esc(l.admin)}</b> — ${esc(l.action)}${l.from!==l.to?` (${esc(l.from)} → ${esc(l.to)})`:""}${l.note?`: ${esc(l.note)}`:""}<br><time>${esc(fmt("created",l.created))}</time></li>`).join("")}</ul>`:`<p class="mu">No activity yet.</p>`;
+    m.innerHTML=`<div class="mc"><button type="button" class="mx" data-close aria-label="Close">✕</button><h3>${esc(b.ref)} ${badge(s)}</h3>${steps}${next}${details}${pay}${crewBox}<div class="acts">${acts.join("")}${hint?`<span class="mu">${esc(hint)}</span>`:""}</div><h4>Activity</h4>${logHtml}</div>`;
+    m.hidden=false;
+  }
+  async function act(action,extra={}){
+    try{await adminCall("booking_action",{action,ref:modalRef,...extra});toast("Saved");const ref=modalRef;await load();await openBooking(ref);}
+    catch(e){toast(e.message);}
+  }
+  async function modalClick(e){
+    const m=e.currentTarget;
+    if(e.target===m||e.target.closest("[data-close]")){closeModal();return;}
+    const a=e.target.closest("[data-act]"),rm=e.target.closest("[data-unassign]"),as=e.target.closest("[data-assign]"),vp=e.target.closest("[data-verify]");
+    const pq=e.target.closest("[data-proofreq]");
+    if(pq){
+      let note="";
+      if(pq.dataset.proofreq==="request"){note=prompt("Tell the customer what is wrong (for example: the picture is blurry, or the amount is not visible):");if(note===null)return;}
+      pq.disabled=true;
+      try{await adminCall("proof_request",{reference:pq.dataset.co,mode:pq.dataset.proofreq,note:note.trim()});toast(pq.dataset.proofreq==="request"?"Customer will see the request in My History":"Request cancelled");const ref=modalRef;await load();await openBooking(ref);}catch(err){pq.disabled=false;toast(err.message);}
+      return;
+    }
+    if(vp){
+      if(!confirm(`Have you independently confirmed receipt of ${php(vp.dataset.due)}?`))return;
+      vp.disabled=true;
+      try{await adminCall("payments",{reference:vp.dataset.verify});toast("Payment verified");const ref=modalRef;await load();await openBooking(ref);}catch(err){vp.disabled=false;toast(err.message);}
+      return;
+    }
+    if(as){
+      const ids=[...m.querySelectorAll('input[name="pick"]:checked')].map(i=>i.value);
+      if(!ids.length){toast("Tick at least one staff member first");return;}
+      const need=+detail.booking.cleaners||1;
+      if(detail.crew.length+ids.length>need&&!confirm(`This booking needs ${need} cleaner(s). Assign ${detail.crew.length+ids.length} anyway?`))return;
+      as.disabled=true;await act("assign",{staff_ids:ids.join(",")});return;
+    }
+    if(rm){
+      const who=detail.crew.find(c=>String(c.id)===rm.dataset.unassign);
+      if(!confirm(`Remove ${who?who.name:"this staff member"} from ${modalRef}?`))return;
+      await act("unassign",{staff_id:rm.dataset.unassign});return;
+    }
+    if(!a)return;
+    const t=a.dataset.act,ref=modalRef;
+    if(t==="accept"){if(!confirm(`Accept ${ref}? The customer will see it as Confirmed.`))return;await act("accept");}
+    else if(t==="decline"){const r=prompt("Reason for declining (e.g. no staff available on that date):");if(r===null)return;await act("decline",{reason:r});}
+    else if(t==="cancel"){const r=prompt("Reason for cancelling this booking:");if(r===null)return;await act("cancel",{reason:r});}
+    else if(t==="start"){if(!confirm(`Start job ${ref} now?`))return;await act("start");}
+    else if(t==="complete"){if(!confirm(`Mark ${ref} as done?`))return;await act("complete");}
+  }
+
+  /* ---------- Table clicks ---------- */
+  $("#tb").onclick=async e=>{
+    const open=e.target.closest("[data-open-booking]");
+    if(open){openBooking(open.dataset.openBooking);return;}
+    const photoButton=e.target.closest("[data-report-photos]");
+    if(photoButton){
+      try{const r=await fetch("backend/admin/report_photos.php?ref="+encodeURIComponent(photoButton.dataset.reportPhotos),{credentials:"same-origin"});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.message||"Unable to load photos");
+        if(!d.photos.length){toast("No photos attached");return;}
+        const w=window.open("","_blank");if(!w){toast("Allow popups to view report photos");return;}
+        w.document.title="Report photos";w.document.body.textContent="Report photos — "+photoButton.dataset.reportPhotos;
+        for(const p of d.photos){const img=w.document.createElement("img");img.src=new URL("backend/admin/report_photo.php?id="+encodeURIComponent(p.id),location.href).href;img.alt=p.original_filename;img.style.cssText="max-width:90%;max-height:80vh;display:block;margin:20px auto";w.document.body.appendChild(img);}
+      }catch(err){toast(err.message)}return;
+    }
+    const lg=e.target.closest("[data-staff-login]");
+    if(lg){
+      const o=DATA.staff.find(x=>String(x.id)===lg.dataset.staffLogin);if(!o)return;
+      if(!confirm(o.user_id?`Create a new temporary password for ${o.full_name}? Their current password will stop working.`:`Create a staff login for ${o.full_name}? Their email (${o.email||"none yet"}) becomes the login.`))return;
+      lg.disabled=true;
+      try{
+        const d=await adminCall("staff",{action:"create_login",id:o.id});
+        prompt(`Login for ${d.name}\nEmail: ${d.email}\nTemporary password (shown only once, copy it and send it to the staff member). They log in at auth.html:`,d.temporary_password);
+        toast(d.created?"Staff login created":"Password reset");await load();
+      }catch(err){toast(err.message)}
+      lg.disabled=false;return;
+    }
+    const b=e.target.closest("[data-edit-staff]");if(!b)return;
+    const o=DATA.staff.find(x=>String(x.id)===b.dataset.editStaff);if(!o)return;
+    const f=document.getElementById("staffForm");for(const [k,v] of Object.entries({id:o.id,name:o.full_name,position:o.position,phone:o.phone||"",email:o.email||"",status:o.status}))f.elements[k].value=v;
+    f.scrollIntoView({behavior:"smooth",block:"center"});
+  };
+  function drawAssignments(){
+    document.getElementById("assignmentList").innerHTML='<h3>Upcoming and active assignments</h3>'+(ASSIGNMENTS.length?ASSIGNMENTS.map(x=>`<p>${esc(x.staff_name)} — <button type="button" class="mini" data-open-booking="${esc(x.booking_ref)}">${esc(x.booking_ref)}</button> ${esc(fmtDate(x.date))} ${esc(fmtTime(x.time))} ${badge(x.booking_status)}</p>`).join(""):'<p class="mu">No active assignments.</p>');
+  }
+  document.getElementById("assignmentList").addEventListener("click",e=>{const b=e.target.closest("[data-open-booking]");if(b)openBooking(b.dataset.openBooking);});
+  document.getElementById("staffForm").onsubmit=async e=>{
+    e.preventDefault();const f=e.currentTarget;const body=Object.fromEntries(new FormData(f));body.action="save";
+    try{await adminCall("staff",body);f.reset();f.elements.id.value=0;toast("Staff saved");await load();}catch(err){toast(err.message)}
+  };
+  $("#tb").onchange=async e=>{
+    const select=e.target.closest("select");if(!select)return;
+    const o=DATA[kind].find(x=>key(x)===select.dataset.ref);if(!o)return;
+    const old=o.status;select.disabled=true;
+    try{if(kind==="review")await adminCall("reviews",{id:o.id,status:select.value});else await adminCall("status",{kind,ref:key(o),status:select.value});o.status=select.value;draw();toast("Status updated");}
+    catch(err){select.value=old;select.disabled=false;toast("Could not save status: "+err.message);}
+  };
+  $("#tb").addEventListener("click",async e=>{
+    const b=e.target.closest("[data-reset-pw]");if(!b)return;
+    const o=DATA.customer.find(x=>String(x.id)===b.dataset.resetPw);if(!o)return;
+    if(!confirm(`Create a new temporary password for ${o.name} (${o.email})?\nTheir current password will stop working.`))return;
+    b.disabled=true;
+    try{
+      const d=await adminCall("reset_password",{user_id:o.id});
+      prompt(`Temporary password for ${d.name} (${d.email}). It is shown only once. Copy it and send it to the client, and ask them to change it after logging in:`,d.temporary_password);
+      toast("Password reset");
+    }catch(err){toast("Could not reset: "+err.message);}
+    b.disabled=false;
+  });
+  $$(".tabs button[data-k]").forEach(t=>t.onclick=()=>{kind=t.dataset.k;genQ=gFrom=gTo="";draw();if(kind==="review"||kind==="activity")loadExtra(kind);});
+  async function loadExtra(k){
+    try{
+      const d=await adminCall(k==="review"?"reviews":"activity");
+      DATA[k]=k==="review"?d.reviews:d.activity;
+    }catch(e){toast("Could not load "+k+": "+e.message);DATA[k]=[];}
+    if(kind===k)draw();
+  }
+  $("#csv").onclick=()=>{
+    const c=[...COLS[kind],["status","Status"]],q=v=>'"'+String(v??"").replace(/^[=+\-@\t\r]/,"'$&").replace(/"/g,'""')+'"';
+    const lines=[c.map(x=>q(x[1])).join(",")].concat(DATA[kind].map(o=>c.map(x=>q(o[x[0]])).join(",")));
+    const a=document.createElement("a");const url=URL.createObjectURL(new Blob([lines.join("\r\n")],{type:"text/csv"}));a.href=url;a.download="cleantee-"+kind+"s.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+  $("#out2").onclick=async()=>{try{await authRequest("logout");location.replace("auth.html")}catch(e){toast("Logout failed. Please retry.")}};
+  authReady.then(u=>{
+    if(!u||u.role!=="admin"){location.replace("auth.html");return;}
+    $("#dash").hidden=false;load();
+  });
+  </script>
+<script src="js/enhancements.js"></script>
+<script src="js/payments-admin.js"></script>
+<script src="js/bubbles.js"></script>
+</body>
+</html>

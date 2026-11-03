@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin.html
+Disallow: /backend/
+Disallow: /sql/
+Disallow: /account.html
+Disallow: /history.html
+Disallow: /receipt.html
+Sitemap: https://YOURDOMAIN.com/sitemap.xml

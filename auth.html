@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Log in or Sign up | CLEANTEE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="images/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/bubbles.css">
+  <style>
+  /* SHOW / HIDE PASSWORD (eye button) */
+  .pw { position: relative; }
+  .pw input { padding-right: 52px; }
+  .pw input::-ms-reveal { display: none; } /* hide Edge's built-in eye so there is only one */
+  .pw .eye {
+    position: absolute;
+    right: 7px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--mu);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: color .2s, background .2s;
+  }
+  .pw .eye:hover { color: var(--bl); background: rgba(47, 127, 216, .12); }
+  .pw .eye:focus-visible { outline: 3px solid var(--bl); outline-offset: 1px; }
+  .pw .eye svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .pw .eye .slash { display: none; }
+  .pw.shown .eye .slash { display: block; }
+  </style>
+<link rel="stylesheet" href="css/enhancements.css">
+<link rel="stylesheet" href="css/bubbles.css">
+</head>
+<body data-page="auth">
+  <main>
+    <div class="ph">
+      <h1>Your CLEANTEE account</h1>
+      <p>Log in to book faster and keep your details saved.</p>
+    </div>
+    <div class="w">
+      <div class="tabs" role="tablist">
+        <button type="button" class="on" data-t="in" role="tab">Log in</button>
+        <button type="button" data-t="up" role="tab">Create account</button>
+      </div>
+      <form id="fin">
+        <div class="f"><label>Email</label><input name="email" type="email" autocomplete="username" required></div>
+        <div class="f"><label>Password</label><div class="pw"><input name="password" type="password" autocomplete="current-password" required><button type="button" class="eye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><line class="slash" x1="3" y1="3" x2="21" y2="21"/></svg></button></div></div>
+        <div class="f"><button class="btn" style="width:100%">Log in</button></div>
+        <a href="reset.html">Forgot password?</a>
+      </form>
+      <form id="fup" hidden>
+        <div><label>Full name</label><input name="name" autocomplete="name" required></div>
+        <div><label>Mobile number</label><input name="phone" type="tel" autocomplete="tel" required></div>
+        <div class="f"><label>Email</label><input name="email" type="email" autocomplete="email" required></div>
+        <div><label>Password (8+ characters)</label><div class="pw"><input name="password" type="password" minlength="8" autocomplete="new-password" required><button type="button" class="eye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><line class="slash" x1="3" y1="3" x2="21" y2="21"/></svg></button></div></div>
+        <div><label>Confirm password</label><div class="pw"><input name="confirm" type="password" minlength="8" autocomplete="new-password" required><button type="button" class="eye" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><line class="slash" x1="3" y1="3" x2="21" y2="21"/></svg></button></div></div>
+        <div class="f"><label class="chk" id="termsLabel"><input type="checkbox" name="terms" id="termsBox" required disabled><span>I have read and agree to the <a href="terms.html" id="tl" target="_blank" rel="noopener">Terms &amp; Conditions</a>, including the Privacy section.</span></label><p id="termsHint" style="margin:6px 0 0;font-size:13px;color:#7a4a00">Please open and read the Terms &amp; Conditions first. Then you can tick this box.</p></div>
+        <div class="f"><button class="btn" style="width:100%">Create account</button></div>
+      </form>
+    </div>
+  </main>
+  <div id="tm" class="modal" hidden><div class="mc" role="dialog" aria-modal="true" aria-labelledby="tt"><button type="button" class="mx" id="tx" aria-label="Close">✕</button><h2 id="tt">Terms &amp; Conditions</h2><p class="sub" style="margin-bottom:0">Last updated October 2026</p><div class="legal">
+        <p>These terms apply when you create a CLEANTEE account, book a service or send us a report. By creating an account or booking, you agree to them.</p>
+        <h3>1. Bookings</h3>
+        <p>A booking request is confirmed only after our team replies with your slot. Each service has a minimum number of hours, shown on the Services page. Please give an accurate address, contact number and access details.</p>
+        <h3>2. Rates and payment</h3>
+        <ul>
+          <li>Rates are in Philippine pesos. Hourly services are charged per hour as listed; fogging, grease trap and aircon services are charged per request or unit as shown.</li>
+          <li>A distance-based transport fee applies, starting at ₱150 per cleaner.</li>
+          <li>The online estimate is a guide. The final amount depends on actual hours worked, the size and condition of the space and any extras agreed on site.</li>
+        </ul>
+        <h3>3. Rescheduling and cancellation</h3>
+        <p>Bookings are not cancelled, except for emergencies, including inclement weather. Instead, your booking will be rescheduled to a new date and time. Please tell us at least 24 hours before your slot if you need to move it. For an emergency or bad weather, send an emergency cancellation request from My History; our team reviews it and replies by email. No-access visits or late changes may be charged the transport fee.</p>
+        <h3>4. Your responsibilities</h3>
+        <ul>
+          <li>Secure valuables, cash and fragile items before the team arrives.</li>
+          <li>Tell us about pets, allergies, hazards and special surfaces beforehand.</li>
+          <li>Keep your login details private. You are responsible for activity under your account.</li>
+        </ul>
+        <h3>5. Issues, damage and missing items</h3>
+        <p>If something is not right, use the Report page within 48 hours of the service, with your booking reference and photos if possible. We review every report and contact you. Claims are assessed case by case.</p>
+        <h3>6. Privacy</h3>
+        <p>We collect your name, contact details, address and booking history to provide our services, confirm bookings and handle reports. We process this data under the Philippine Data Privacy Act of 2012 (RA 10173), do not sell it, and share it only with staff who need it. You may ask us to access, correct or delete your data at cleantee.ph@gmail.com.</p>
+        <h3>7. Limits of liability</h3>
+        <p>We take reasonable care in every job. Our liability is limited to the cost of the service booked, except where the law does not allow this. We are not liable for pre-existing damage or wear.</p>
+        <h3>8. Changes and contact</h3>
+        <p>We may update these terms and will post the new date on this page. Questions? Email cleantee.ph@gmail.com or call (02) 8374 7538.</p>
+        </div></div></div>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+  const forms = {in: document.getElementById("fin"), up: document.getElementById("fup")};
+  function tab(t) {
+    document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
+    forms.in.hidden = t !== "in";
+    forms.up.hidden = t !== "up";
+  }
+  document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => tab(b.dataset.t));
+  if (location.hash === "#signup") tab("up");
+
+  // Eye button: show or hide the password in its box
+  document.querySelectorAll(".pw .eye").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const wrap = btn.closest(".pw");
+      const input = wrap.querySelector("input");
+      const show = input.type === "password";
+      input.type = show ? "text" : "password";
+      wrap.classList.toggle("shown", show);
+      btn.setAttribute("aria-pressed", String(show));
+      btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+      input.focus();
+    });
+  });
+
+  function msg(message) {
+    const t = document.getElementById("toast");
+    if (!t) { alert(message); return; }
+    t.textContent = message;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 4500);
+  }
+
+
+  function userSuccess(user) {
+    sessionStorage.removeItem("ct_admin");
+    localStorage.removeItem("ct_session");
+    const target = sessionStorage.getItem("ct_booking_return");
+    sessionStorage.removeItem("ct_booking_return");
+    location.href = user.role === "admin" ? "admin.html" : user.role === "staff" ? "staff.html" : (/^(book|services)\.html(?:\?[^#]*)?$/.test(target || "") ? target : "services.html");
+  }
+
+  forms.in.addEventListener("submit", async e => {
+    e.preventDefault();
+    const f = forms.in;
+    const b = f.querySelector("button.btn");
+    const old = b.textContent;
+    b.disabled = true;
+    b.textContent = "Please wait…";
+    try {
+      const username = f.elements.email.value.trim();
+      const password = f.elements.password.value;
+      
+      // Regular user login retains the existing API flow.
+      const data = new FormData();
+      data.set("email", username);
+      data.set("password", password);
+      const result = await api("login", data);
+      userSuccess(result.user);
+    } catch (err) {
+      msg(err.message === "suspended"
+        ? "⚠️ This account is suspended. Please contact us."
+        : err.message === "Admin authentication is temporarily unavailable."
+          ? "⚠️ Admin login is unavailable. Please try again."
+          : err.message);
+    } finally {
+      b.disabled = false;
+      b.textContent = old;
+    }
+  });
+
+  forms.up.addEventListener("submit", async e => {
+    e.preventDefault();
+    const f = forms.up;
+    if (f.elements.password.value !== f.elements.confirm.value) {
+      msg("⚠️ Passwords do not match.");
+      return;
+    }
+    const b = f.querySelector("button.btn");
+    const old = b.textContent;
+    b.disabled = true;
+    b.textContent = "Please wait…";
+    try {
+      const result = await api("register", new FormData(f));
+      userSuccess(result.user);
+    } catch (err) {
+      msg(err.message === "exists"
+        ? "⚠️ That email already has an account. Try logging in."
+        : err.message);
+    } finally {
+      b.disabled = false;
+      b.textContent = old;
+    }
+  });
+
+  const tm = document.getElementById("tm");
+  function toggleTerms(open) {
+    tm.hidden = !open;
+    document.body.style.overflow = open ? "hidden" : "";
+  }
+  // The Terms page opens in a new tab (your form stays here). The box can only be ticked after the link is opened.
+  const termsBox = document.getElementById("termsBox"), termsHint = document.getElementById("termsHint");
+  const TERMS_KEY = "ct_terms_opened";
+  function unlockTerms() {
+    termsBox.disabled = false;
+    termsHint.hidden = true;
+  }
+  function termsSeen() { try { return localStorage.getItem(TERMS_KEY) === "1"; } catch (_) { return false; } }
+  function rememberTerms() { try { localStorage.setItem(TERMS_KEY, "1"); } catch (_) {} unlockTerms(); }
+  function recheckTerms() { if (termsSeen()) unlockTerms(); }
+  // localStorage is shared between tabs, so it still works after the Terms page opens in a new tab.
+  try { localStorage.getItem(TERMS_KEY); } catch (_) { unlockTerms(); } // storage blocked: do not lock people out
+  recheckTerms();
+  addEventListener("focus", recheckTerms);
+  addEventListener("pageshow", recheckTerms);
+  addEventListener("storage", recheckTerms);
+  document.getElementById("tl").addEventListener("click", rememberTerms);
+  document.getElementById("termsLabel").addEventListener("click", e => {
+    if (termsBox.disabled && !e.target.closest("a")) {
+      termsHint.style.fontWeight = "700";
+      setTimeout(() => { termsHint.style.fontWeight = ""; }, 1200);
+    }
+  });
+  document.getElementById("tx").onclick = () => toggleTerms(false);
+  tm.onclick = e => {if (e.target === tm) toggleTerms(false);};
+  addEventListener("keydown", e => {if (e.key === "Escape") toggleTerms(false);});
+  </script>
+<script src="js/enhancements.js"></script>
+<script src="js/bubbles.js"></script>
+</body>
+</html>

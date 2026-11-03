@@ -1,0 +1,5 @@
+# Apache 2.4+: do not serve private PHP configuration or connection helpers.
+<FilesMatch "^(config|database)\.php$">
+    Require all denied
+</FilesMatch>
+Options -Indexes

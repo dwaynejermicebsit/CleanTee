@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>My Account | CLEANTEE</title>
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="images/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/enhancements.css">
+  <link rel="stylesheet" href="css/bubbles.css">
+
+  <style>
+    .acct{max-width:560px;margin:0 auto;display:grid;gap:20px}
+    .acct .box{background:var(--sf);border:1px solid var(--ln);border-radius:24px;padding:26px;box-shadow:0 14px 40px rgba(10,58,122,.07)}
+    .acct h2{font-size:26px;margin-bottom:12px}
+    .acct dl{display:grid;grid-template-columns:110px 1fr;gap:8px 12px;margin:0}
+    .acct dt{color:var(--mu);font-weight:600;font-size:14px}.acct dd{margin:0;word-break:break-word}
+    .acct form{display:grid;grid-template-columns:1fr;gap:14px;border:0;box-shadow:none;padding:0;max-width:none}
+    .acct .msg{min-height:22px;font-weight:600;font-size:14px}
+    .acct .msg.bad{color:#b3261e}.acct .msg.good{color:#15803d}
+    .acct .pw-hint{font-size:12px;color:var(--mu);margin-top:4px}
+    .acct .links{display:flex;gap:14px;flex-wrap:wrap}.acct .links a{color:var(--bl);font-weight:600}
+  </style>
+</head>
+<body data-page="account">
+  <main>
+    <div class="ph"><h1>My Account</h1><p>Your details and password.</p></div>
+    <div class="w">
+      <div class="acct">
+        <div class="box" id="profile"><h2>Your details</h2><p style="color:var(--mu)">Loading…</p></div>
+        <div class="box">
+          <h2>Change password</h2>
+          <form id="pwForm" novalidate>
+            <div><label for="cp">Current password</label><input id="cp" type="password" autocomplete="current-password" required></div>
+            <div><label for="np">New password</label><input id="np" type="password" autocomplete="new-password" minlength="8" required><div class="pw-hint">At least 8 characters. Use a password you do not use anywhere else.</div></div>
+            <div><label for="cf">Confirm new password</label><input id="cf" type="password" autocomplete="new-password" required></div>
+            <div class="msg" id="pwMsg" role="alert"></div>
+            <button class="btn" type="submit">Change password</button>
+          </form>
+        </div>
+        <div class="links"><a href="history.html">My Bookings</a><a href="services.html">Book a service</a><a href="reset.html">Forgot your password?</a></div>
+      </div>
+    </div>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const msg=(t,ok)=>{const m=document.getElementById("pwMsg");m.textContent=t;m.className="msg "+(ok?"good":"bad");};
+  (async()=>{
+    const me=await authReady;
+    const box=document.getElementById("profile");
+    if(!me){box.innerHTML='<h2>Your details</h2><p>Please <a href="auth.html" style="color:var(--bl);font-weight:600">log in</a> to see your account.</p>';document.getElementById("pwForm").hidden=true;return;}
+    box.innerHTML=`<h2>Your details</h2><dl><dt>Name</dt><dd>${esc(me.name)}</dd><dt>Email</dt><dd>${esc(me.email)}</dd>${me.phone?`<dt>Mobile</dt><dd>${esc(me.phone)}</dd>`:""}<dt>Account</dt><dd>${esc(me.role==="admin"?"Administrator":"Customer")}</dd></dl>`;
+  })();
+  document.getElementById("pwForm").onsubmit=async e=>{
+    e.preventDefault();
+    const cp=document.getElementById("cp").value,np=document.getElementById("np").value,cf=document.getElementById("cf").value;
+    if(!cp){msg("Enter your current password.");return;}
+    if(np.length<8){msg("Your new password must be at least 8 characters.");return;}
+    if(np!==cf){msg("The new passwords do not match.");return;}
+    const btn=e.target.querySelector("button");btn.disabled=true;msg("");
+    try{
+      await authReady;
+      const fd=new URLSearchParams({current_password:cp,new_password:np,confirm_password:cf});
+      const r=await fetch("backend/auth/change_password.php",{method:"POST",credentials:"same-origin",headers:{"X-CSRF-Token":ctCsrf},body:fd});
+      let d={};try{d=await r.json();}catch(x){}
+      if(!r.ok||!d.ok)throw new Error(d.message||"Could not change the password.");
+      e.target.reset();msg("Password changed. Use your new password next time you log in.",true);
+    }catch(x){msg(x.message);}
+    btn.disabled=false;
+  };
+  </script>
+  <script src="js/enhancements.js"></script> 
+  <script src="js/bubbles.js"></script>
+</body>
+</html>

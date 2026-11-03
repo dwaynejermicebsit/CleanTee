@@ -1,0 +1,23 @@
+# Save as .htaccess in the site root (merge with your existing one). Needs Apache mod_rewrite + mod_headers.
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} !^localhost [NC]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "geolocation=(self), camera=(), microphone=()"
+Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
+</IfModule>
+
+Options -Indexes
+<FilesMatch "\.(sql|md|txt|bak|log)$">
+ <If "%{REQUEST_URI} !~ m#/(robots)\.txt$#">
+  Require all denied
+ </If>
+</FilesMatch>
+<FilesMatch "^config\.php$">
+ Require all denied
+</FilesMatch>

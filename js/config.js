@@ -1,0 +1,1 @@
+const CONFIG={API_BASE:"",ENDPOINTS:{}};

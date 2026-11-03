@@ -1,0 +1,16 @@
+/* Customer reviews strip (services page, home page) */
+.rv-strip{margin-top:30px;background:#fff;border:1px solid #d5e4f7;border-radius:24px;padding:24px 26px;box-shadow:0 14px 40px rgba(10,58,122,.07)}
+.rv-top{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.rv-top h3{margin:0;font-size:24px;color:#0a3a7a}
+.rv-score{display:flex;align-items:center;gap:10px}
+.rv-avg{font:700 40px 'Fredoka','Trebuchet MS',sans-serif;color:#2f7fd8;line-height:1}
+.rv-stars{color:#f59a0c;letter-spacing:2px;font-size:20px}
+.rv-sub{color:#4d6485;font-size:13px}
+.rv-top a{color:#2f7fd8;font-weight:600;text-decoration:none}
+.rv-top a:hover{text-decoration:underline}
+.rv-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.rv-item{background:#f2f8ff;border-radius:18px;padding:16px 18px;animation:rv-in .5s ease both;animation-delay:calc(var(--i,0)*90ms)}
+.rv-item q{display:block;quotes:none;margin:6px 0 8px;color:#0c2347;font-size:14px}
+.rv-item small{color:#4d6485}
+@keyframes rv-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.rv-item{animation:none}}

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>My Bookings | CLEANTEE</title>
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="images/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/enhancements.css">
+<link rel="stylesheet" href="css/bubbles.css">
+<style>
+  .hist-tools{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .hist-tools a{color:var(--bl);font-weight:600;text-decoration:none}
+  /* the card's glow layer used to sit on top of the buttons and swallow clicks */
+  .card::before{pointer-events:none}
+  .hist-actions{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .hist-actions button,.hist-actions a{border:1.5px solid var(--ln);background:#fff;color:var(--navy);border-radius:99px;padding:7px 14px;font:600 13px var(--bd);cursor:pointer;text-decoration:none;transition:.2s}
+  .hist-actions button:hover,.hist-actions a:hover{border-color:var(--bl);box-shadow:0 6px 16px rgba(47,127,216,.22);transform:translateY(-2px)}
+  .hist-actions .danger{color:#b3261e}
+  .hist-actions .danger:hover{border-color:#b3261e;box-shadow:0 6px 16px rgba(179,38,30,.18)}
+  .hist-note{display:inline-block;margin-top:10px;font-size:13px;color:#7a4a00;background:#fff4e0;border-radius:99px;padding:4px 12px;font-weight:600}
+  .stars{color:#f59a0c;letter-spacing:2px;font-size:18px}
+  .skel{height:260px;border-radius:24px;background:linear-gradient(90deg,#e8f1fc 25%,#f5f9ff 50%,#e8f1fc 75%);background-size:200% 100%;animation:skel 1.3s linear infinite}
+  @keyframes skel{to{background-position:-200% 0}}
+  .empty-card{grid-column:1/-1;text-align:center;padding:50px 20px;background:#fff;border:1px dashed var(--ln);border-radius:24px}
+  .empty-card .big{font-size:46px}
+  .dlg h3{font-size:24px;color:var(--navy);margin-bottom:6px}
+  .dlg p.sub2{color:var(--mu);margin-bottom:14px;font-size:14px}
+  .dlg label{margin-top:12px}
+  .dlg .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .dlg .err{color:#b3261e;font-weight:600;font-size:14px;min-height:20px;margin-top:10px}
+  .dlg .acts{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .crewrate{margin-top:10px}.crewrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--ln)}
+  .mini-stars button{border:0;background:none;font-size:26px;line-height:1;color:#cfd9e8;cursor:pointer;padding:0 1px}.mini-stars button.on{color:#f59a0c}
+  /* make sure no decorative layer, tilt effect or glow can sit over the buttons */
+  #hist .card{transform:none!important;transform-style:flat!important}
+  #hist .card::before,#hist .card::after{display:none!important}
+  #hist{perspective:none!important}
+  .hist-actions{z-index:20}
+  .starpick{display:flex;gap:6px;margin:8px 0}
+  .starpick button{border:0;background:none;font-size:38px;line-height:1;color:#cfd9e8;cursor:pointer;transition:transform .2s,color .2s}
+  .starpick button.on{color:#f59a0c}
+  .starpick button:hover{transform:scale(1.2)}
+</style>
+</head>
+<body data-page="history">
+  <main>
+    <div class="ph">
+      <h1>My Bookings</h1>
+      <p>Your booking history and the status of each request.</p>
+    </div>
+    <div class="w">
+      <div class="hist-tools"><span id="histCount" style="color:var(--mu)"></span><span><a href="account.html">Account settings</a> &nbsp;·&nbsp; <a href="services.html">Book another service</a></span></div>
+      <div class="grid" id="hist" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))"></div>
+    </div>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const el=document.getElementById("hist");
+  const showMessage=(message,link=false,icon="🧽")=>{
+    el.innerHTML=`<div class="empty-card"><div class="big">${icon}</div><p style="margin-top:8px">${esc(message)}${link?' <a href="services.html" style="color:var(--bl);font-weight:600">Browse services</a>.':''}</p></div>`;
+  };
+  const showSkeleton=()=>{el.innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div>';};
+  const formatDate=v=>{
+    if(!v)return "Not specified";
+    const d=new Date(String(v).replace(" ","T"));
+    return Number.isNaN(d.getTime())?String(v):d.toLocaleString("en-PH",{dateStyle:"medium",timeStyle:"short"});
+  };
+  const pesos=v=>{
+    if(v===null||v===undefined||v==="")return "Not available";
+    const n=Number(v);
+    return Number.isFinite(n)?"₱"+n.toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2}):"Not available";
+  };
+  const stage={
+    "New":"Received. We are reviewing your request and payment.",
+    "Confirmed":"Confirmed. We are assigning your cleaning crew.",
+    "Assigned":"Your crew is assigned.",
+    "In Progress":"Your cleaning is in progress.",
+    "Done":"Completed. Thank you for choosing CLEANTEE!",
+    "Declined":"Sorry, we could not accept this request.",
+    "Cancelled":"This booking was cancelled."
+  };
+  const color={"New":"#b45309","Confirmed":"#1d4ed8","Assigned":"#1d4ed8","In Progress":"#0f766e","Done":"#15803d","Declined":"#b91c1c","Cancelled":"#b91c1c"};
+  const method={gcash:"GCash / Maya",bank:"Bank transfer",cash:"Cash"};
+  const payText={"Awaiting payment":"Waiting for your payment","Awaiting verification":"Payment received, being verified","Verified":"Payment verified"};
+  let ROWS=[];
+
+  /* ---- helpers for actions ---- */
+  async function post(endpoint,fd){
+    await authReady;
+    const r=await fetch("backend/"+endpoint+".php",{method:"POST",credentials:"same-origin",headers:{"X-CSRF-Token":ctCsrf},body:fd});
+    let d={};try{d=await r.json();}catch(e){}
+    if(!r.ok||!d.ok)throw new Error(d.message||"Something went wrong. Please try again.");
+    return d;
+  }
+  function toast2(m){
+    let t=document.getElementById("histToast");
+    if(!t){t=document.createElement("div");t.id="histToast";t.setAttribute("role","status");t.style.cssText="position:fixed;left:50%;bottom:24px;transform:translate(-50%,160%);background:#4a9a2a;color:#fff;padding:14px 26px;border-radius:16px;font-weight:600;z-index:300;max-width:90%;text-align:center;transition:transform .5s cubic-bezier(.2,1.6,.4,1);box-shadow:0 12px 30px rgba(74,154,42,.4)";document.body.appendChild(t);}
+    t.textContent=m;requestAnimationFrame(()=>{t.style.transform="translate(-50%,0)";});
+    clearTimeout(t._h);t._h=setTimeout(()=>{t.style.transform="translate(-50%,160%)";},4500);
+  }
+  function dialog(html){
+    const m=document.createElement("div");m.className="modal";
+    m.innerHTML=`<div class="mc dlg" role="dialog" aria-modal="true"><button type="button" class="mx" aria-label="Close">✕</button>${html}</div>`;
+    const close=()=>{m.remove();document.removeEventListener("keydown",onKey);};
+    const onKey=e=>{if(e.key==="Escape")close();};
+    m.addEventListener("click",e=>{if(e.target===m||e.target.closest(".mx"))close();});
+    document.addEventListener("keydown",onKey);
+    document.body.appendChild(m);m.close=close;return m;
+  }
+  function row(ref){return ROWS.find(r=>r.ref===ref);}
+
+  function changeDialog(ref,type){
+    const r=row(ref);if(!r)return;
+    const tom=new Date(Date.now()+2*864e5).toISOString().slice(0,10);
+    const m=dialog(`<h3>${type==="cancel"?"Cancel booking (emergency only)":"Reschedule booking"}</h3>
+      <p class="sub2">${esc(r.service||"")} · ${esc(r.date)} ${esc(String(r.time).slice(0,5))}<br>Changes need CLEANTEE's approval. You will get an email with the answer.</p>${type==="cancel"?`<p class="sub2" style="background:#fff4e0;border-radius:12px;padding:10px 12px;color:#7a4a00"><b>Our policy:</b> bookings are not cancelled, except for emergencies, including bad weather. Your booking will be <b>rescheduled</b> instead. Need a new date? Close this and choose <b>Reschedule</b>.</p>`:""}
+      <form id="chgForm" style="display:block;border:0;box-shadow:none;padding:0;background:none">
+        ${type==="reschedule"?`<div class="row2"><div><label for="nd">New date</label><input id="nd" type="date" min="${tom}" required></div><div><label for="nt">New time</label><input id="nt" type="time" required></div></div>`:""}
+        <label for="rs">Reason</label>
+        <textarea id="rs" rows="3" maxlength="255" required placeholder="${type==='cancel'?'Describe the emergency or weather problem':'Tell us why'}"></textarea>
+        <div class="err" id="chgErr" role="alert"></div>
+        <div class="acts"><button class="btn" type="submit">Send request</button><button class="btn alt" type="button" id="chgNo" style="color:var(--navy);border-color:var(--ln);background:#fff">Never mind</button></div>
+      </form>`);
+    m.querySelector("#chgNo").onclick=()=>m.close();
+    m.querySelector("#chgForm").onsubmit=async e=>{
+      e.preventDefault();const btn=e.target.querySelector("button[type=submit]"),err=m.querySelector("#chgErr");err.textContent="";btn.disabled=true;
+      try{
+        const fd=new FormData();fd.set("ref",ref);fd.set("type",type);fd.set("reason",m.querySelector("#rs").value.trim());
+        if(type==="reschedule"){fd.set("new_date",m.querySelector("#nd").value);fd.set("new_time",m.querySelector("#nt").value);}
+        const d=await post("bookings/request_change",fd);m.close();toast2(d.message);loadBookings();
+      }catch(x){err.textContent=x.message;btn.disabled=false;}
+    };
+  }
+  function reviewDialog(ref){
+    const r=row(ref);if(!r)return;let rating=0;const staffRate={};
+    const ids=String(r.crew_ids||"").split(",").filter(Boolean),names=String(r.crew||"").split(", ");
+    const crewPick=ids.length?`<div class="crewrate"><label>Rate your cleaner${ids.length>1?"s":""} (optional)</label>${ids.map((id,i)=>`<div class="crewrow" data-sid="${esc(id)}"><span>${esc(names[i]||"Cleaner "+(i+1))}</span><span class="mini-stars">${[1,2,3,4,5].map(n=>`<button type="button" data-n="${n}" aria-label="${n} star${n>1?"s":""}">★</button>`).join("")}</span></div>`).join("")}</div>`:"";
+    const m=dialog(`<h3>Rate your cleaning</h3><p class="sub2">${esc(r.service||"")} · ${esc(r.date)}</p>
+      <div class="starpick" id="stars" role="radiogroup" aria-label="Rating">${[1,2,3,4,5].map(n=>`<button type="button" data-n="${n}" aria-label="${n} star${n>1?"s":""}">★</button>`).join("")}</div>
+      ${crewPick}
+      <label for="cm">Comment (optional)</label><textarea id="cm" rows="3" maxlength="600" placeholder="How was our service?"></textarea>
+      <div class="err" id="rvErr" role="alert"></div>
+      <div class="acts"><button class="btn" type="button" id="rvGo">Submit review</button></div>`);
+    const paint=()=>m.querySelectorAll("#stars button").forEach(b=>b.classList.toggle("on",+b.dataset.n<=rating));
+    m.querySelector("#stars").onclick=e=>{const b=e.target.closest("button");if(!b)return;rating=+b.dataset.n;paint();};
+    m.querySelectorAll(".crewrow").forEach(rw=>rw.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;staffRate[rw.dataset.sid]=+b.dataset.n;rw.querySelectorAll("button").forEach(x=>x.classList.toggle("on",+x.dataset.n<=+b.dataset.n));}));
+    m.querySelector("#rvGo").onclick=async e=>{
+      const err=m.querySelector("#rvErr");err.textContent="";if(!rating){err.textContent="Please choose 1 to 5 stars.";return;}
+      e.target.disabled=true;
+      try{const fd=new FormData();fd.set("ref",ref);fd.set("rating",rating);fd.set("comment",m.querySelector("#cm").value.trim());
+        if(Object.keys(staffRate).length)fd.set("staff_ratings",JSON.stringify(staffRate));
+        const d=await post("reviews/submit",fd);m.close();toast2(d.message);loadBookings();
+      }catch(x){err.textContent=x.message;e.target.disabled=false;}
+    };
+  }
+  function proofPicker(checkoutRef,btn){
+    const inp=document.createElement("input");inp.type="file";inp.accept="image/jpeg,image/png,image/webp";
+    inp.onchange=async()=>{
+      const f=inp.files[0];if(!f)return;
+      if(f.size>4*1024*1024){toast2("The image is too large. Please use a file under 4 MB.");return;}
+      const old=btn.textContent;btn.disabled=true;btn.textContent="Uploading…";
+      try{const fd=new FormData();fd.set("checkout_ref",checkoutRef);fd.set("proof",f);const d=await post("bookings/proof",fd);toast2(d.message);loadBookings();}
+      catch(x){toast2(x.message);btn.disabled=false;btn.textContent=old;}
+    };
+    inp.click();
+  }
+
+  function runAct(b){
+    const a=b.dataset.act,ref=b.dataset.ref;
+    if(a==="cancel"||a==="reschedule")changeDialog(ref,a);
+    else if(a==="review")reviewDialog(ref);
+    else if(a==="proof")proofPicker(b.dataset.co,b);
+  }
+  el.addEventListener("click",e=>{
+    const b=e.target.closest("[data-act]");if(!b)return;
+    runAct(b);
+  });
+  // Safety net: if some other layer (tilt, glow, cursor effect) receives the click, pass it to the button or link under the pointer.
+  document.addEventListener("click",e=>{
+    if(e.target.closest&&e.target.closest(".hist-actions,.modal"))return;
+    const hit=document.elementsFromPoint(e.clientX,e.clientY).find(x=>x.matches&&x.matches(".hist-actions button,.hist-actions a"));
+    if(!hit)return;
+    e.preventDefault();e.stopPropagation();
+    if(hit.tagName==="A")location.href=hit.href;else if(hit.dataset.act)runAct(hit);
+  },true);
+
+  function card(r){
+    const st=r.status||"New";
+    const s=typeof SERVICES!=="undefined"?SERVICES.find(x=>x.id===r.service||x.name===r.service):null;
+    const service=s?(s.icon+" "+s.name):(r.service||"Cleaning service");
+    const hours=r.hours!==null&&r.hours!==undefined&&r.hours!==""?`<br><b>Hours:</b> ${esc(r.hours)}`:"";
+    const notes=r.notes?`<br><b>Notes:</b> ${esc(r.notes)}`:"";
+    const crew=r.crew?`<br><b>Your crew:</b> ${esc(r.crew)}`:"";
+    const reason=r.reason?`<br><b>Reason:</b> ${esc(r.reason)}`:"";
+    const pay=r.checkout_ref?`<br><b>Payment:</b> ${esc(method[r.payment_method]||r.payment_method)} · ${esc(payText[r.payment_status]||r.payment_status)}<br><b>Down payment (whole checkout):</b> ${esc(pesos(r.down_payment_due))}<br><small>Checkout ref: ${esc(r.checkout_ref)}</small>`:"";
+    const open=["New","Confirmed","Assigned"].includes(st);
+    const pending=+r.pending_request>0;
+    const acts=[];
+    if(r.checkout_ref)acts.push(`<a href="receipt.html?ref=${encodeURIComponent(r.checkout_ref)}">🧾 Receipt</a>`);
+    if(r.checkout_ref&&r.payment_method!=="cash"&&r.payment_status!=="Verified"&&open){
+      if(!+r.has_proof)acts.push(`<button type="button" data-act="proof" data-co="${esc(r.checkout_ref)}">Upload payment receipt</button>`);
+      else if(+r.proof_requested)acts.push(`<button type="button" data-act="proof" data-co="${esc(r.checkout_ref)}">Send new payment receipt</button>`);
+      else acts.push(`<button type="button" disabled title="Available only if CLEANTEE asks you for a new receipt" style="opacity:.5;cursor:not-allowed">Replace payment receipt</button>`);
+    }
+    if(open&&!pending){acts.push(`<button type="button" data-act="reschedule" data-ref="${esc(r.ref)}">Reschedule</button>`,`<button type="button" class="danger" data-act="cancel" data-ref="${esc(r.ref)}">Cancel (emergency)</button>`);}
+    if(st==="Done"&&r.review_rating==null)acts.push(`<button type="button" data-act="review" data-ref="${esc(r.ref)}">⭐ Rate service</button>`);
+    const flags=[];
+    if(+r.proof_requested&&r.payment_status!=="Verified")flags.push(`<span class="hist-note" style="background:#fff1d6;color:#7a4a00">CLEANTEE asked for a new payment receipt${r.proof_request_note?": "+esc(r.proof_request_note):"."}</span>`);
+    if(pending)flags.push(`<span class="hist-note">Change request waiting for approval</span>`);
+    if(+r.has_proof&&r.payment_status!=="Verified")flags.push(`<span class="hist-note">Receipt uploaded</span>`);
+    if(r.review_rating!=null)flags.push(`<div style="margin-top:10px"><span class="stars" aria-label="${esc(r.review_rating)} out of 5">${"★".repeat(+r.review_rating)}${"☆".repeat(5-(+r.review_rating))}</span> <small>${r.review_status==="Pending"?"Thanks! Your review is waiting for approval.":"Your rating"}</small></div>`);
+    return `<div class="card">
+      <span class="pill" style="background:${color[st]||"#475569"};color:#fff">${esc(st)}</span>
+      <h3>${esc(service)}</h3>
+      <p style="margin:.4rem 0;font-weight:600">${esc(stage[st]||"")}</p>
+      <p><b>Ref:</b> ${esc(r.ref)}
+      <br><b>When:</b> ${esc(r.date)} ${esc(r.time)}
+      ${hours}
+      <br><b>Address:</b> ${esc(r.address)}
+      <br><b>Estimated total:</b> ${esc(pesos(r.estimated_total))}
+      ${crew}${reason}${pay}
+      ${notes}
+      <br><small>Booked ${esc(formatDate(r.created))}</small></p>
+      ${flags.join("")}
+      ${acts.length?`<div class="hist-actions">${acts.join("")}</div>`:""}
+    </div>`;
+  }
+
+  async function loadBookings(){
+    try {
+      const me=await authReady;
+      if(!me){showMessage("Please log in to view your bookings.",false,"🔒");return;}
+      if(me.role!=="customer"){showMessage("Booking history is available to customer accounts.",false,"🔒");return;}
+      // The backend restricts results by the logged-in user_id.
+      const rows=await api("booking",null,"GET");
+      if(!Array.isArray(rows))throw new Error("Unexpected booking response");
+      ROWS=rows;
+      document.getElementById("histCount").textContent=rows.length?rows.length+" booking"+(rows.length>1?"s":""):"";
+      if(!rows.length){showMessage("No bookings yet. Your first cleaning is just a few clicks away.",true);return;}
+      el.innerHTML=rows.map(card).join("");
+    } catch(err){
+      console.error("Could not load booking history:",err);
+      showMessage("Could not load your booking history. Please refresh and try again.",false,"⚠️");
+    }
+  }
+  showSkeleton();loadBookings();
+  </script>
+<script src="js/enhancements.js"></script>
+<script src="js/bubbles.js"></script>
+</body>
+</html>
